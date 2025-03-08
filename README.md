@@ -1,69 +1,49 @@
-# Welcome to your Lovable project
+# Welcome to the AI-Based Study Assistant 📚🤖
 
-## Project info
+## Project Info
 
-**URL**: https://lovable.dev/projects/ef1a6fbf-57fe-459e-b006-641d7567d0ae
+**Live Demo**: [Coming Soon]  
+**GitHub Repository**: [Your Repo URL]
 
-## How can I edit this code?
+## What is this project about?
 
-There are several ways of editing your application.
+The AI-Based Study Assistant is a smart tool that helps students **organize study schedules**, **summarize textbooks**, and **generate quizzes** from study materials using AI. 🚀
 
-**Use Lovable**
+## Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ef1a6fbf-57fe-459e-b006-641d7567d0ae) and start prompting.
+✅ AI-powered **study planner** based on deadlines  
+✅ OCR-based **document summarization**  
+✅ Auto-generated **quizzes** from study materials  
+✅ **Beautiful UI** built with Tailwind CSS  
+✅ **Responsive design** for desktop & mobile
 
-Changes made via Lovable will be committed automatically to this repo.
+## Tech Stack
 
-**Use your preferred IDE**
+This project is built with:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **React** (with TypeScript for type safety)
+- **Firebase** (authentication & database)
+- **OpenAI API** (for AI-generated quizzes & summaries)
+- **OCR API** (for extracting text from images/PDFs)
+- **Tailwind CSS** (for styling & layout)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## How to Set Up the Project
 
-Follow these steps:
+To get started, clone the repo and install dependencies:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone
 
 # Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+cd ai-study-assistant
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Step 3: Install dependencies.
+yarn
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Step 4: Create a .env file with API keys (Firebase, OpenAI, OCR API).
+cp .env.example .env
+
+# Step 5: Start the development server.
+yarn dev
 ```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/ef1a6fbf-57fe-459e-b006-641d7567d0ae) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
