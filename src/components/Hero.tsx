@@ -35,6 +35,15 @@ const Hero = () => {
     };
   }, []);
   
+  // Function to scroll to features section
+  const scrollToFeatures = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const featuresElement = document.getElementById('features');
+    if (featuresElement) {
+      featuresElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   return (
     <div className="relative overflow-hidden" ref={observerRef}>
       {/* Background gradient */}
@@ -67,8 +76,8 @@ const Hero = () => {
               <Button asChild size="lg" className="bg-brand-500 hover:bg-brand-600 shadow-md button-effect">
                 <Link to="/dashboard">Get Started</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-brand-200 hover:bg-brand-50 dark:border-brand-800 dark:hover:bg-brand-900/50 button-effect">
-                <Link to="#features">Learn More</Link>
+              <Button asChild variant="outline" size="lg" className="border-brand-200 hover:bg-brand-50 dark:border-brand-800 dark:hover:bg-brand-900/50 button-effect" onClick={scrollToFeatures}>
+                <a href="#features">Learn More</a>
               </Button>
             </div>
           </div>
@@ -155,21 +164,25 @@ const Hero = () => {
               {
                 icon: <Calendar className="w-10 h-10 text-brand-500" />,
                 title: "AI Study Planner",
-                description: "Generate personalized study schedules based on your deadlines, priorities, and learning style."
+                description: "Generate personalized study schedules based on your deadlines, priorities, and learning style.",
+                link: "/planner"
               },
               {
                 icon: <BookOpen className="w-10 h-10 text-brand-500" />,
                 title: "Document Summarization",
-                description: "Upload documents and get AI-generated summaries, key points, and flashcards to accelerate your learning."
+                description: "Upload documents and get AI-generated summaries, key points, and flashcards to accelerate your learning.",
+                link: "/summarizer"
               },
               {
                 icon: <BarChart4 className="w-10 h-10 text-brand-500" />,
                 title: "Smart Quizzes",
-                description: "Create AI-generated quizzes from your study materials to test your knowledge and reinforce learning."
+                description: "Create AI-generated quizzes from your study materials to test your knowledge and reinforce learning.",
+                link: "/quiz"
               }
             ].map((feature, index) => (
-              <div 
+              <Link 
                 key={index}
+                to={feature.link}
                 className="glass-card rounded-xl p-6 animate-on-scroll opacity-0 translate-y-4 transition-all duration-700 hover-effect"
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
@@ -178,7 +191,7 @@ const Hero = () => {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -87,8 +87,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setShowDialog(false);
     
     toast({
-      title: "Guest Login Successful",
-      description: "You are now using a guest account. Your data won't be saved after logout.",
+      title: "Guest Access Granted",
+      description: "You're now using EduWhisperer as a guest. Limited features are available. Your data won't be saved after logout.",
     });
   };
 

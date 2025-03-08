@@ -19,6 +19,18 @@ interface QuizResult {
   improvements: string[];
 }
 
+interface Question {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
+}
+
+interface Quiz {
+  title: string;
+  questions: Question[];
+}
+
 const Quiz = () => {
   const { isAuthenticated, showLoginDialog } = useAuth();
   const [activeTab, setActiveTab] = useState<QuizMode>("topic");
@@ -32,6 +44,13 @@ const Quiz = () => {
   const [startTime, setStartTime] = useState<number>(0);
   const [file, setFile] = useState<File | null>(null);
   
+  // Quiz generation parameters
+  const [selectedSubject, setSelectedSubject] = useState<string>("");
+  const [selectedTopic, setSelectedTopic] = useState<string>("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("intermediate");
+  const [questionCount, setQuestionCount] = useState<number>(5);
+  const [currentQuiz, setCurrentQuiz] = useState<Quiz | null>(null);
+  
   // Expanded subject list
   const subjects = [
     "Computer Science", "Mathematics", "Physics", "Biology", "Chemistry", 
@@ -44,48 +63,293 @@ const Quiz = () => {
     "Film Studies", "Religious Studies", "Ethics", "Genetics", "Microbiology",
     "Ecology", "Marketing", "Finance", "International Relations"
   ];
-  
-  // Mock quiz data
-  const mockQuiz = {
-    title: "Introduction to Machine Learning",
-    questions: [
-      {
-        question: "What is the main goal of supervised learning?",
-        options: [
-          "To cluster similar data points without labels",
-          "To predict outcomes based on labeled training data",
-          "To reduce the dimensionality of the data",
-          "To generate new data samples similar to the training data"
+
+  // Quiz generation function
+  const generateQuiz = (mode: QuizMode) => {
+    let title = "";
+    const questions: Question[] = [];
+    
+    // Generate topic-specific quiz based on selected parameters
+    if (mode === "topic") {
+      title = selectedTopic || (selectedSubject ? `Introduction to ${selectedSubject}` : "General Knowledge Quiz");
+      
+      // Generate appropriate topics based on subject selection
+      const topics: Record<string, Question[]> = {
+        "Computer Science": [
+          {
+            question: "What is the main goal of supervised learning?",
+            options: [
+              "To cluster similar data points without labels",
+              "To predict outcomes based on labeled training data",
+              "To reduce the dimensionality of the data",
+              "To generate new data samples similar to the training data"
+            ],
+            correctAnswer: 1,
+            explanation: "Supervised learning uses labeled training data to learn a function that can be used to predict outcomes for unseen data."
+          },
+          {
+            question: "Which of the following is NOT a type of machine learning?",
+            options: [
+              "Supervised learning",
+              "Unsupervised learning",
+              "Deterministic learning",
+              "Reinforcement learning"
+            ],
+            correctAnswer: 2,
+            explanation: "Deterministic learning is not a recognized type of machine learning. The main types are supervised, unsupervised, reinforcement, and semi-supervised learning."
+          },
+          {
+            question: "What is a common evaluation metric for classification problems?",
+            options: [
+              "Mean Squared Error (MSE)",
+              "Root Mean Squared Error (RMSE)",
+              "Accuracy",
+              "R-squared"
+            ],
+            correctAnswer: 2,
+            explanation: "Accuracy, which measures the proportion of correctly classified instances, is a common evaluation metric for classification problems."
+          },
+          {
+            question: "Which algorithm is NOT used for clustering?",
+            options: [
+              "K-means",
+              "DBSCAN",
+              "Hierarchical clustering",
+              "Logistic Regression"
+            ],
+            correctAnswer: 3,
+            explanation: "Logistic Regression is a supervised learning algorithm used for classification, not clustering."
+          },
+          {
+            question: "What is the purpose of regularization in machine learning?",
+            options: [
+              "To increase model complexity",
+              "To reduce overfitting",
+              "To increase training speed",
+              "To improve data preprocessing"
+            ],
+            correctAnswer: 1,
+            explanation: "Regularization techniques are used to prevent overfitting by adding a penalty term to the loss function, discouraging complex models."
+          }
         ],
-        correctAnswer: 1,
-        explanation: "Supervised learning uses labeled training data to learn a function that can be used to predict outcomes for unseen data."
-      },
-      {
-        question: "Which of the following is NOT a type of machine learning?",
-        options: [
-          "Supervised learning",
-          "Unsupervised learning",
-          "Deterministic learning",
-          "Reinforcement learning"
+        "Mathematics": [
+          {
+            question: "What is the derivative of f(x) = x²?",
+            options: [
+              "f'(x) = 2x",
+              "f'(x) = x",
+              "f'(x) = 2",
+              "f'(x) = x²"
+            ],
+            correctAnswer: 0,
+            explanation: "The derivative of x² is 2x, which can be derived using the power rule: d/dx(x^n) = n*x^(n-1)."
+          },
+          {
+            question: "What is the value of sin(π/2)?",
+            options: [
+              "0",
+              "1/2",
+              "1",
+              "√2/2"
+            ],
+            correctAnswer: 2,
+            explanation: "sin(π/2) = 1. This is a fundamental value in trigonometry."
+          },
+          {
+            question: "What is the integral of f(x) = 2x?",
+            options: [
+              "F(x) = x² + C",
+              "F(x) = 2x² + C",
+              "F(x) = x² + 2 + C",
+              "F(x) = x² - 2x + C"
+            ],
+            correctAnswer: 0,
+            explanation: "The integral of 2x is x². We can verify this by differentiating x² to get 2x."
+          },
+          {
+            question: "Which of the following is not a prime number?",
+            options: [
+              "17",
+              "19",
+              "21",
+              "23"
+            ],
+            correctAnswer: 2,
+            explanation: "21 is not a prime number because it can be factored as 3 × 7."
+          },
+          {
+            question: "What is the quadratic formula?",
+            options: [
+              "x = (-b ± √(b² - 4ac))/2a",
+              "x = (-b ± √(b² + 4ac))/2a",
+              "x = (b ± √(b² - 4ac))/2a",
+              "x = b/(2a) ± √(b² - 4ac)"
+            ],
+            correctAnswer: 0,
+            explanation: "The quadratic formula for solving ax² + bx + c = 0 is x = (-b ± √(b² - 4ac))/2a."
+          }
         ],
-        correctAnswer: 2,
-        explanation: "Deterministic learning is not a recognized type of machine learning. The main types are supervised, unsupervised, reinforcement, and semi-supervised learning."
-      },
-      {
-        question: "What is a common evaluation metric for classification problems?",
-        options: [
-          "Mean Squared Error (MSE)",
-          "Root Mean Squared Error (RMSE)",
-          "Accuracy",
-          "R-squared"
-        ],
-        correctAnswer: 2,
-        explanation: "Accuracy, which measures the proportion of correctly classified instances, is a common evaluation metric for classification problems."
+        "Physics": [
+          {
+            question: "What is Newton's Second Law of Motion?",
+            options: [
+              "For every action, there is an equal and opposite reaction",
+              "Force equals mass times acceleration (F = ma)",
+              "An object at rest stays at rest unless acted upon by a force",
+              "Energy cannot be created or destroyed, only transformed"
+            ],
+            correctAnswer: 1,
+            explanation: "Newton's Second Law states that force equals mass times acceleration (F = ma)."
+          },
+          {
+            question: "Which of the following is a unit of energy?",
+            options: [
+              "Newton",
+              "Ampere",
+              "Joule",
+              "Tesla"
+            ],
+            correctAnswer: 2,
+            explanation: "The joule (J) is the SI unit of energy, work, and heat."
+          },
+          {
+            question: "What is the speed of light in vacuum?",
+            options: [
+              "3 × 10⁸ m/s",
+              "3 × 10⁶ m/s",
+              "3 × 10⁴ m/s",
+              "3 × 10² m/s"
+            ],
+            correctAnswer: 0,
+            explanation: "The speed of light in vacuum is approximately 3 × 10⁸ m/s (299,792,458 m/s exactly)."
+          },
+          {
+            question: "Which fundamental force is responsible for holding the nucleus of an atom together?",
+            options: [
+              "Gravitational force",
+              "Electromagnetic force",
+              "Weak nuclear force",
+              "Strong nuclear force"
+            ],
+            correctAnswer: 3,
+            explanation: "The strong nuclear force holds the nucleus together, overcoming the electromagnetic repulsion between protons."
+          },
+          {
+            question: "What is the principle of conservation of energy?",
+            options: [
+              "Energy can be created but not destroyed",
+              "Energy can be destroyed but not created",
+              "Energy cannot be created or destroyed, only transformed",
+              "Energy is always increasing in a closed system"
+            ],
+            correctAnswer: 2,
+            explanation: "The principle of conservation of energy states that energy cannot be created or destroyed, only transformed from one form to another."
+          }
+        ]
+      };
+      
+      // Default questions if subject not found
+      const defaultQuestions: Question[] = [
+        {
+          question: "What is the capital of France?",
+          options: ["London", "Paris", "Berlin", "Madrid"],
+          correctAnswer: 1,
+          explanation: "Paris is the capital city of France."
+        },
+        {
+          question: "Who wrote 'Romeo and Juliet'?",
+          options: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+          correctAnswer: 1,
+          explanation: "William Shakespeare wrote 'Romeo and Juliet' in the late 16th century."
+        },
+        {
+          question: "What is the chemical symbol for water?",
+          options: ["H2O", "CO2", "O2", "NaCl"],
+          correctAnswer: 0,
+          explanation: "H2O is the chemical formula for water, consisting of two hydrogen atoms and one oxygen atom."
+        },
+        {
+          question: "In which year did World War II end?",
+          options: ["1943", "1945", "1947", "1950"],
+          correctAnswer: 1,
+          explanation: "World War II ended in 1945 with the surrender of Germany in May and Japan in September."
+        },
+        {
+          question: "What is photosynthesis?",
+          options: [
+            "The process by which plants make food using light energy",
+            "The process of cell division",
+            "The decomposition of organic matter",
+            "The process of animal respiration"
+          ],
+          correctAnswer: 0,
+          explanation: "Photosynthesis is the process by which green plants use sunlight to synthesize foods from carbon dioxide and water."
+        }
+      ];
+      
+      // Get questions based on subject or use default
+      const availableQuestions = topics[selectedSubject] || defaultQuestions;
+      
+      // Select the requested number of questions
+      const selectedQuestions = availableQuestions.slice(0, questionCount);
+      
+      // If we don't have enough questions, repeat some to reach the requested count
+      while (selectedQuestions.length < questionCount) {
+        const index = selectedQuestions.length % availableQuestions.length;
+        selectedQuestions.push({...availableQuestions[index]});
       }
-    ]
+      
+      return {
+        title,
+        questions: selectedQuestions
+      };
+    } else if (mode === "document") {
+      // Document-based quiz
+      title = file ? `Quiz on ${file.name}` : "Document-Based Quiz";
+      // Generate questions based on the document (mock)
+      for (let i = 0; i < questionCount; i++) {
+        questions.push({
+          question: `Question ${i + 1} about the document content?`,
+          options: [
+            `Document option 1 for question ${i + 1}`,
+            `Document option 2 for question ${i + 1}`,
+            `Document option 3 for question ${i + 1}`,
+            `Document option 4 for question ${i + 1}`
+          ],
+          correctAnswer: Math.floor(Math.random() * 4),
+          explanation: `This is an explanation for question ${i + 1} about the document.`
+        });
+      }
+    } else {
+      // Custom quiz
+      title = "Custom Quiz";
+      // Generate questions based on custom prompt (mock)
+      for (let i = 0; i < questionCount; i++) {
+        questions.push({
+          question: `Custom question ${i + 1}?`,
+          options: [
+            `Custom option 1 for question ${i + 1}`,
+            `Custom option 2 for question ${i + 1}`,
+            `Custom option 3 for question ${i + 1}`,
+            `Custom option 4 for question ${i + 1}`
+          ],
+          correctAnswer: Math.floor(Math.random() * 4),
+          explanation: `This is an explanation for custom question ${i + 1}.`
+        });
+      }
+    }
+    
+    return {
+      title,
+      questions
+    };
   };
   
   const handleStartQuiz = () => {
+    // Generate the quiz based on user selections
+    const newQuiz = generateQuiz(activeTab);
+    setCurrentQuiz(newQuiz);
+    
     setQuizStarted(true);
     setCurrentQuestion(0);
     setSelectedAnswer(null);
@@ -94,6 +358,7 @@ const Quiz = () => {
     setQuizComplete(false);
     setQuizResult(null);
     setStartTime(Date.now());
+    
     toast({
       title: "Quiz Started",
       description: "Good luck with your quiz!"
@@ -111,7 +376,7 @@ const Quiz = () => {
   };
   
   const handleNextQuestion = () => {
-    if (currentQuestion < mockQuiz.questions.length - 1) {
+    if (currentQuiz && currentQuestion < currentQuiz.questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
       setSelectedAnswer(null);
       setShowExplanation(false);
@@ -122,19 +387,21 @@ const Quiz = () => {
   };
   
   const calculateQuizResults = () => {
+    if (!currentQuiz) return;
+    
     // End of quiz
     const timeSpent = Math.floor((Date.now() - startTime) / 1000);
     const correctCount = answers.filter(
-      (answer, index) => answer === mockQuiz.questions[index].correctAnswer
+      (answer, index) => answer === currentQuiz.questions[index].correctAnswer
     ).length;
     
-    const percentage = Math.round((correctCount / mockQuiz.questions.length) * 100);
+    const percentage = Math.round((correctCount / currentQuiz.questions.length) * 100);
     
     // Generate improvement suggestions
     const improvements: string[] = [];
     answers.forEach((answer, index) => {
-      if (answer !== mockQuiz.questions[index].correctAnswer) {
-        improvements.push(`Review: ${mockQuiz.questions[index].question}`);
+      if (answer !== currentQuiz.questions[index].correctAnswer) {
+        improvements.push(`Review: ${currentQuiz.questions[index].question}`);
       }
     });
     
@@ -143,7 +410,7 @@ const Quiz = () => {
     }
     
     setQuizResult({
-      totalQuestions: mockQuiz.questions.length,
+      totalQuestions: currentQuiz.questions.length,
       correctAnswers: correctCount,
       percentage,
       timeSpent,
@@ -154,15 +421,15 @@ const Quiz = () => {
     setQuizStarted(false);
     
     // Save result to localStorage
-    saveQuizResult(percentage, correctCount, mockQuiz.questions.length);
+    saveQuizResult(percentage, correctCount, currentQuiz.questions.length, currentQuiz.title);
   };
   
-  const saveQuizResult = (percentage: number, correct: number, total: number) => {
+  const saveQuizResult = (percentage: number, correct: number, total: number, topic: string) => {
     try {
       const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
       results.push({
         date: new Date().toISOString(),
-        topic: mockQuiz.title,
+        topic,
         percentage,
         correctAnswers: correct,
         totalQuestions: total
@@ -217,8 +484,9 @@ const Quiz = () => {
     }
   };
   
-  const currentQuizQuestion = mockQuiz.questions[currentQuestion];
-  const progress = ((currentQuestion + 1) / mockQuiz.questions.length) * 100;
+  // Get current question
+  const currentQuizQuestion = currentQuiz?.questions[currentQuestion];
+  const progress = currentQuiz ? ((currentQuestion + 1) / currentQuiz.questions.length) * 100 : 0;
   
   return (
     <div className="min-h-screen bg-background">
@@ -256,10 +524,12 @@ const Quiz = () => {
                             <select
                               id="subject"
                               className="w-full p-2 border border-border rounded-md"
+                              value={selectedSubject}
+                              onChange={(e) => setSelectedSubject(e.target.value)}
                             >
                               <option value="">Select a subject...</option>
                               {subjects.map((subject, index) => (
-                                <option key={index} value={subject.toLowerCase().replace(/\s+/g, '-')}>
+                                <option key={index} value={subject}>
                                   {subject}
                                 </option>
                               ))}
@@ -275,6 +545,8 @@ const Quiz = () => {
                               type="text"
                               className="w-full p-2 border border-border rounded-md"
                               placeholder="e.g. Machine Learning, Organic Chemistry"
+                              value={selectedTopic}
+                              onChange={(e) => setSelectedTopic(e.target.value)}
                             />
                           </div>
                           
@@ -286,6 +558,8 @@ const Quiz = () => {
                               <select
                                 id="difficulty"
                                 className="w-full p-2 border border-border rounded-md"
+                                value={selectedDifficulty}
+                                onChange={(e) => setSelectedDifficulty(e.target.value)}
                               >
                                 <option value="beginner">Beginner</option>
                                 <option value="intermediate">Intermediate</option>
@@ -300,6 +574,8 @@ const Quiz = () => {
                               <select
                                 id="question-count"
                                 className="w-full p-2 border border-border rounded-md"
+                                value={questionCount}
+                                onChange={(e) => setQuestionCount(parseInt(e.target.value))}
                               >
                                 <option value="5">5 questions</option>
                                 <option value="10">10 questions</option>
@@ -333,7 +609,17 @@ const Quiz = () => {
                             { name: "Calculus", count: 92 },
                             { name: "Classical Literature", count: 43 }
                           ].map((topic, index) => (
-                            <div key={index} className="flex justify-between items-center p-3 bg-muted/40 rounded-md hover:bg-muted/70 cursor-pointer">
+                            <div 
+                              key={index} 
+                              className="flex justify-between items-center p-3 bg-muted/40 rounded-md hover:bg-muted/70 cursor-pointer"
+                              onClick={() => {
+                                setSelectedSubject(topic.name.includes("Machine Learning") ? "Computer Science" : 
+                                                   topic.name.includes("Organic Chemistry") ? "Chemistry" :
+                                                   topic.name.includes("World War II") ? "History" :
+                                                   topic.name.includes("Calculus") ? "Mathematics" : "Literature");
+                                setSelectedTopic(topic.name);
+                              }}
+                            >
                               <span className="font-medium">{topic.name}</span>
                               <span className="text-xs text-muted-foreground">{topic.count} quizzes</span>
                             </div>
@@ -394,6 +680,8 @@ const Quiz = () => {
                             <select
                               id="doc-questions"
                               className="w-full p-2 border border-border rounded-md"
+                              value={questionCount}
+                              onChange={(e) => setQuestionCount(parseInt(e.target.value))}
                             >
                               <option value="5">5 questions</option>
                               <option value="10">10 questions</option>
@@ -408,6 +696,8 @@ const Quiz = () => {
                             <select
                               id="doc-difficulty"
                               className="w-full p-2 border border-border rounded-md"
+                              value={selectedDifficulty}
+                              onChange={(e) => setSelectedDifficulty(e.target.value)}
                             >
                               <option value="beginner">Beginner</option>
                               <option value="intermediate">Intermediate</option>
@@ -470,6 +760,8 @@ const Quiz = () => {
                           <select
                             id="custom-difficulty"
                             className="w-full p-2 border border-border rounded-md"
+                            value={selectedDifficulty}
+                            onChange={(e) => setSelectedDifficulty(e.target.value)}
                           >
                             <option value="beginner">Beginner</option>
                             <option value="intermediate">Intermediate</option>
@@ -484,6 +776,8 @@ const Quiz = () => {
                           <select
                             id="custom-question-count"
                             className="w-full p-2 border border-border rounded-md"
+                            value={questionCount}
+                            onChange={(e) => setQuestionCount(parseInt(e.target.value))}
                           >
                             <option value="5">5 questions</option>
                             <option value="10">10 questions</option>
@@ -616,82 +910,84 @@ const Quiz = () => {
                 <CardContent className="p-6">
                   <div className="mb-6">
                     <div className="flex justify-between items-center mb-2">
-                      <h2 className="font-semibold">{mockQuiz.title}</h2>
+                      <h2 className="font-semibold">{currentQuiz?.title}</h2>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Clock className="h-4 w-4 mr-1" />
-                        Question {currentQuestion + 1} of {mockQuiz.questions.length}
+                        Question {currentQuestion + 1} of {currentQuiz?.questions.length}
                       </div>
                     </div>
                     <Progress value={progress} className="h-2" />
                   </div>
                   
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-medium flex items-start">
-                        <HelpCircle className="h-5 w-5 mr-2 text-brand-500 flex-shrink-0 mt-0.5" />
-                        {currentQuizQuestion.question}
-                      </h3>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      {currentQuizQuestion.options.map((option, index) => (
-                        <div
-                          key={index}
-                          className={`p-4 border rounded-md cursor-pointer transition-colors ${
-                            selectedAnswer === index 
-                              ? selectedAnswer === currentQuizQuestion.correctAnswer
-                                ? "border-green-500 bg-green-50 dark:bg-green-900/20"
-                                : "border-red-500 bg-red-50 dark:bg-red-900/20"
-                              : "border-border hover:border-brand-200 dark:hover:border-brand-800"
-                          }`}
-                          onClick={() => handleSelectAnswer(index)}
-                        >
-                          <div className="flex items-start">
-                            <div className="flex-shrink-0 mr-3">
-                              {selectedAnswer === index ? (
-                                selectedAnswer === currentQuizQuestion.correctAnswer ? (
-                                  <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center">
-                                    <Check className="h-3 w-3 text-white" />
-                                  </div>
+                  {currentQuizQuestion && (
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-medium flex items-start">
+                          <HelpCircle className="h-5 w-5 mr-2 text-brand-500 flex-shrink-0 mt-0.5" />
+                          {currentQuizQuestion.question}
+                        </h3>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {currentQuizQuestion.options.map((option, index) => (
+                          <div
+                            key={index}
+                            className={`p-4 border rounded-md cursor-pointer transition-colors ${
+                              selectedAnswer === index 
+                                ? selectedAnswer === currentQuizQuestion.correctAnswer
+                                  ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                                  : "border-red-500 bg-red-50 dark:bg-red-900/20"
+                                : "border-border hover:border-brand-200 dark:hover:border-brand-800"
+                            }`}
+                            onClick={() => handleSelectAnswer(index)}
+                          >
+                            <div className="flex items-start">
+                              <div className="flex-shrink-0 mr-3">
+                                {selectedAnswer === index ? (
+                                  selectedAnswer === currentQuizQuestion.correctAnswer ? (
+                                    <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center">
+                                      <Check className="h-3 w-3 text-white" />
+                                    </div>
+                                  ) : (
+                                    <div className="h-5 w-5 rounded-full bg-red-500 flex items-center justify-center">
+                                      <X className="h-3 w-3 text-white" />
+                                    </div>
+                                  )
                                 ) : (
-                                  <div className="h-5 w-5 rounded-full bg-red-500 flex items-center justify-center">
-                                    <X className="h-3 w-3 text-white" />
-                                  </div>
-                                )
-                              ) : (
-                                <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/30"></div>
-                              )}
-                            </div>
-                            <div>
-                              <p>{option}</p>
+                                  <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/30"></div>
+                                )}
+                              </div>
+                              <div>
+                                <p>{option}</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {selectedAnswer !== null && (
-                      <>
-                        {showExplanation ? (
-                          <div className="mt-4 p-4 bg-muted rounded-md">
-                            <h4 className="font-medium mb-2 flex items-center">
-                              <Brain className="h-4 w-4 mr-2 text-brand-500" />
-                              Explanation
-                            </h4>
-                            <p>{currentQuizQuestion.explanation}</p>
-                          </div>
-                        ) : (
-                          <Button variant="outline" onClick={handleViewExplanation} className="w-full mt-2">
-                            Show Explanation
+                        ))}
+                      </div>
+                      
+                      {selectedAnswer !== null && (
+                        <>
+                          {showExplanation ? (
+                            <div className="mt-4 p-4 bg-muted rounded-md">
+                              <h4 className="font-medium mb-2 flex items-center">
+                                <Brain className="h-4 w-4 mr-2 text-brand-500" />
+                                Explanation
+                              </h4>
+                              <p>{currentQuizQuestion.explanation}</p>
+                            </div>
+                          ) : (
+                            <Button variant="outline" onClick={handleViewExplanation} className="w-full mt-2">
+                              Show Explanation
+                            </Button>
+                          )}
+                          
+                          <Button className="w-full mt-4 bg-brand-500 hover:bg-brand-600" onClick={handleNextQuestion}>
+                            {currentQuiz && currentQuestion < currentQuiz.questions.length - 1 ? "Next Question" : "Finish Quiz"}
                           </Button>
-                        )}
-                        
-                        <Button className="w-full mt-4 bg-brand-500 hover:bg-brand-600" onClick={handleNextQuestion}>
-                          {currentQuestion < mockQuiz.questions.length - 1 ? "Next Question" : "Finish Quiz"}
-                        </Button>
-                      </>
-                    )}
-                  </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
