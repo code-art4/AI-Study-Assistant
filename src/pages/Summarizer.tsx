@@ -1,15 +1,92 @@
 
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
-import { BookOpen, Upload, FileText, Check } from "lucide-react";
+import { BookOpen, Upload, FileText, Check, FileType, Download, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/use-toast";
+
+const EXAMPLE_SUMMARIES = {
+  "Introduction to Machine Learning": {
+    original: "45 pages",
+    summary: "Machine learning (ML) is a branch of artificial intelligence (AI) and computer science which focuses on the use of data and algorithms to imitate the way that humans learn, gradually improving its accuracy. IBM has a rich history with machine learning. Arthur Samuel, an IBM researcher, coined the term 'machine learning' in 1952 while at IBM and designed a checkers playing program that was one of the first programs that could learn from its own experience. Neural networks, which have been around since the earliest days of AI, and are systems that learn to perform tasks by analyzing training examples, are experiencing a renaissance in the field of deep learning. These applications can be highly useful, but they are typically built to perform specific tasks, and their capabilities are limited to the scope of what they've been designed for.",
+    keyPoints: [
+      "Machine learning is a branch of AI focused on data and algorithms",
+      "Arthur Samuel coined the term 'machine learning' in 1952 at IBM",
+      "Neural networks are experiencing a renaissance in deep learning",
+      "ML applications are typically designed for specific tasks"
+    ]
+  },
+  "Quantum Physics Explained": {
+    original: "22 pages",
+    summary: "Quantum physics is a branch of physics that deals with the behavior of matter and energy at the smallest scales. At this level, particles can behave like waves and vice versa (wave-particle duality). Key principles include quantum entanglement, where particles become connected and the state of one instantly influences the other regardless of distance, and Heisenberg's uncertainty principle, which states that certain pairs of physical properties cannot be precisely determined simultaneously. Quantum superposition allows particles to exist in multiple states until measured. These principles form the foundation of quantum computing, which promises to revolutionize computing by performing certain calculations exponentially faster than classical computers.",
+    keyPoints: [
+      "Quantum physics deals with matter and energy at the smallest scales",
+      "Wave-particle duality means particles can behave like waves and vice versa",
+      "Quantum entanglement connects particles regardless of distance",
+      "Heisenberg's uncertainty principle limits simultaneous measurement precision",
+      "Quantum superposition allows particles to exist in multiple states until measured"
+    ]
+  },
+  "World History: The Renaissance": {
+    original: "18 pages",
+    summary: "The Renaissance was a period of European cultural, artistic, political, and scientific 'rebirth' after the Middle Ages. Beginning in Florence, Italy, in the 14th century, it spread across Europe and lasted until the 17th century. Key features include the rediscovery of classical philosophy, literature, and art, as well as new developments across many intellectual pursuits. Renaissance art emphasized realism and three-dimensional perspective, with masters like Leonardo da Vinci, Michelangelo, and Raphael creating works that remain influential. The period saw technological advances including the printing press, which democratized knowledge, and scientific breakthroughs by figures like Copernicus and Galileo who challenged established views of the universe. The Renaissance also featured political developments including the rise of powerful banking families, city-states, and the early nation-state.",
+    keyPoints: [
+      "The Renaissance was a period of 'rebirth' after the Middle Ages (14th-17th century)",
+      "It began in Florence, Italy and spread across Europe",
+      "Featured rediscovery of classical works and new intellectual developments",
+      "Renaissance art emphasized realism and three-dimensional perspective",
+      "Major technological advances included the printing press",
+      "Scientific breakthroughs challenged established views of the universe"
+    ]
+  },
+  "Programming in Python": {
+    original: "32 pages",
+    summary: "Python is a high-level, interpreted programming language known for its readability and versatility. Created by Guido van Rossum and first released in 1991, Python has a design philosophy that emphasizes code readability with its use of significant whitespace. Key features include dynamic typing, memory management, comprehensive standard libraries, and support for multiple programming paradigms including procedural, object-oriented, and functional programming. Python is widely used in web development, data analysis, artificial intelligence, scientific computing, and automation. Its syntax allows programmers to express concepts in fewer lines of code than languages like C++ or Java. Popular libraries and frameworks include NumPy for numerical computing, Django for web development, TensorFlow for machine learning, and Pandas for data analysis.",
+    keyPoints: [
+      "Python is a high-level, interpreted language known for readability",
+      "Created by Guido van Rossum in 1991",
+      "Features dynamic typing and automatic memory management",
+      "Supports multiple programming paradigms",
+      "Widely used in web development, data analysis, AI, and scientific computing",
+      "Popular libraries include NumPy, Django, TensorFlow, and Pandas"
+    ]
+  }
+};
 
 const Summarizer = () => {
   const [activeTab, setActiveTab] = useState("upload");
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [summaryType, setSummaryType] = useState("concise");
+  const [focusTopics, setFocusTopics] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [summary, setSummary] = useState<{
+    text: string;
+    keyPoints: string[];
+    originalLength: string;
+    summaryLength: string;
+  } | null>(null);
+  const [summaryHistory, setSummaryHistory] = useState<{
+    id: string;
+    title: string;
+    date: Date;
+    type: string;
+  }[]>([
+    {
+      id: "1",
+      title: "Physics Textbook Chapter 4",
+      date: new Date(2023, 10, 15),
+      type: "PDF"
+    },
+    {
+      id: "2",
+      title: "Database Systems Lecture Notes",
+      date: new Date(2023, 11, 2),
+      type: "DOCX"
+    }
+  ]);
   
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -37,6 +114,80 @@ const Summarizer = () => {
   
   const handleReset = () => {
     setFile(null);
+    setSummary(null);
+  };
+  
+  const handleGenerateSummary = () => {
+    if (!file) return;
+    
+    setIsGenerating(true);
+    toast({
+      title: "Generating Summary",
+      description: "Please wait while we process your document..."
+    });
+    
+    // Simulate API call with delay
+    setTimeout(() => {
+      // Mock summary generation based on file name
+      const mockSummary = {
+        text: "This is an AI-generated summary of your document. The document covers several key topics and provides detailed explanations of complex concepts. The main themes include theoretical foundations, practical applications, and recent advancements in the field. Several case studies are presented to illustrate the practical implications of the theoretical concepts discussed throughout the document.",
+        keyPoints: [
+          "Key theoretical foundations are established in the first section",
+          "Practical applications are demonstrated through case studies",
+          "Recent advancements suggest new directions for future research",
+          "Methodological approaches vary depending on context and requirements",
+          "Limitations and constraints are acknowledged and discussed"
+        ],
+        originalLength: `${Math.floor(Math.random() * 50) + 10} pages`,
+        summaryLength: `${Math.floor(Math.random() * 5) + 1} pages`
+      };
+      
+      setSummary(mockSummary);
+      setIsGenerating(false);
+      
+      // Add to history
+      setSummaryHistory(prev => [
+        {
+          id: Date.now().toString(),
+          title: file.name,
+          date: new Date(),
+          type: file.type.split("/")[1].toUpperCase()
+        },
+        ...prev
+      ]);
+      
+      toast({
+        title: "Summary Generated",
+        description: "Your document has been successfully summarized."
+      });
+    }, 3000);
+  };
+  
+  const handleViewSampleSummary = (title: string) => {
+    const exampleSummary = EXAMPLE_SUMMARIES[title as keyof typeof EXAMPLE_SUMMARIES];
+    
+    if (exampleSummary) {
+      setSummary({
+        text: exampleSummary.summary,
+        keyPoints: exampleSummary.keyPoints,
+        originalLength: exampleSummary.original,
+        summaryLength: `${Math.ceil(exampleSummary.summary.length / 500)} pages`
+      });
+      
+      setActiveTab("upload");
+      toast({
+        title: "Sample Summary Loaded",
+        description: `Viewing sample summary: ${title}`
+      });
+    }
+  };
+  
+  const handleCopyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copied to Clipboard",
+      description: "The summary has been copied to your clipboard."
+    });
   };
   
   return (
@@ -63,7 +214,7 @@ const Summarizer = () => {
                 <div className="md:col-span-2">
                   <Card>
                     <CardContent className="pt-6">
-                      {!file ? (
+                      {!file && !summary ? (
                         <div
                           className={`border-2 border-dashed rounded-lg p-10 text-center ${
                             isDragging ? "border-brand-500 bg-brand-50 dark:bg-brand-900/10" : "border-border"
@@ -100,7 +251,7 @@ const Summarizer = () => {
                             </p>
                           </div>
                         </div>
-                      ) : (
+                      ) : !summary ? (
                         <div className="border rounded-lg p-6">
                           <div className="flex items-center mb-4">
                             <div className="rounded-full bg-green-50 dark:bg-green-900/20 p-2 mr-3">
@@ -128,6 +279,8 @@ const Summarizer = () => {
                               <select
                                 id="summary-type"
                                 className="w-full p-2 border border-border rounded-md"
+                                value={summaryType}
+                                onChange={(e) => setSummaryType(e.target.value)}
                               >
                                 <option value="concise">Concise Summary (25% of original)</option>
                                 <option value="detailed">Detailed Summary (50% of original)</option>
@@ -145,6 +298,8 @@ const Summarizer = () => {
                                 type="text"
                                 className="w-full p-2 border border-border rounded-md"
                                 placeholder="e.g. Neural Networks, Deep Learning"
+                                value={focusTopics}
+                                onChange={(e) => setFocusTopics(e.target.value)}
                               />
                               <p className="text-xs text-muted-foreground">
                                 Enter specific topics you want to focus on in the summary
@@ -152,10 +307,73 @@ const Summarizer = () => {
                             </div>
                             
                             <div className="pt-2">
-                              <Button className="w-full bg-brand-500 hover:bg-brand-600">
-                                Generate Summary
+                              <Button 
+                                className="w-full bg-brand-500 hover:bg-brand-600"
+                                disabled={isGenerating}
+                                onClick={handleGenerateSummary}
+                              >
+                                {isGenerating ? "Generating..." : "Generate Summary"}
                               </Button>
                             </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="border rounded-lg p-6">
+                          <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-semibold text-lg">Summary Results</h3>
+                            <div className="flex space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleCopyToClipboard(summary.text)}
+                              >
+                                <Copy className="h-4 w-4 mr-1" />
+                                Copy
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleReset}
+                              >
+                                Upload New
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-muted/40 p-4 rounded-md mb-4">
+                            <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                              <span>Original: {summary.originalLength}</span>
+                              <span>Summary: {summary.summaryLength}</span>
+                            </div>
+                            <div className="prose dark:prose-invert max-w-none">
+                              <p>{summary.text}</p>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="font-medium mb-3">Key Points</h4>
+                            <ul className="space-y-2">
+                              {summary.keyPoints.map((point, index) => (
+                                <li key={index} className="flex items-start">
+                                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-500 mr-2">
+                                    {index + 1}
+                                  </span>
+                                  <span>{point}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          
+                          <div className="flex justify-between mt-6">
+                            <Button variant="outline">
+                              <Download className="h-4 w-4 mr-2" />
+                              Download PDF
+                            </Button>
+                            {summaryType !== "flashcards" && (
+                              <Button className="bg-brand-500 hover:bg-brand-600">
+                                Generate Flashcards
+                              </Button>
+                            )}
                           </div>
                         </div>
                       )}
@@ -210,37 +428,40 @@ const Summarizer = () => {
             </TabsContent>
             
             <TabsContent value="history" className="space-y-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 space-y-6">
-                <p className="text-center text-muted-foreground py-12">
-                  You haven't summarized any documents yet.
-                </p>
-              </div>
+              {summaryHistory.length > 0 ? (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                  <h3 className="text-lg font-semibold mb-4">Recently Summarized Documents</h3>
+                  <div className="space-y-4">
+                    {summaryHistory.map((item) => (
+                      <div key={item.id} className="flex items-center justify-between p-4 bg-muted/40 rounded-md hover:bg-muted/70 cursor-pointer">
+                        <div className="flex items-start">
+                          <div className="mr-3 p-2 bg-brand-50 dark:bg-brand-900/20 rounded-md">
+                            <FileType className="h-5 w-5 text-brand-500" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium">{item.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {item.date.toLocaleDateString()} • {item.type}
+                            </p>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="sm">View</Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 space-y-6">
+                  <p className="text-center text-muted-foreground py-12">
+                    You haven't summarized any documents yet.
+                  </p>
+                </div>
+              )}
             </TabsContent>
             
             <TabsContent value="examples" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[
-                  {
-                    title: "Introduction to Machine Learning",
-                    type: "Textbook Chapter",
-                    length: "45 pages"
-                  },
-                  {
-                    title: "Quantum Physics Explained",
-                    type: "Academic Paper",
-                    length: "22 pages"
-                  },
-                  {
-                    title: "World History: The Renaissance",
-                    type: "Course Notes",
-                    length: "18 pages"
-                  },
-                  {
-                    title: "Programming in Python",
-                    type: "Tutorial",
-                    length: "32 pages"
-                  }
-                ].map((example, index) => (
+                {Object.keys(EXAMPLE_SUMMARIES).map((title, index) => (
                   <Card key={index} className="hover-effect">
                     <CardContent className="pt-6">
                       <div className="flex items-start">
@@ -248,12 +469,16 @@ const Summarizer = () => {
                           <BookOpen className="h-5 w-5 text-brand-500" />
                         </div>
                         <div>
-                          <h3 className="font-medium">{example.title}</h3>
-                          <p className="text-sm text-muted-foreground">{example.type} • {example.length}</p>
+                          <h3 className="font-medium">{title}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {index % 2 === 0 ? "Textbook Chapter" : index % 3 === 0 ? "Academic Paper" : "Course Notes"} • 
+                            {EXAMPLE_SUMMARIES[title as keyof typeof EXAMPLE_SUMMARIES].original}
+                          </p>
                           <Button
                             variant="link"
                             size="sm"
                             className="px-0 text-brand-500"
+                            onClick={() => handleViewSampleSummary(title)}
                           >
                             View Sample Summary
                           </Button>

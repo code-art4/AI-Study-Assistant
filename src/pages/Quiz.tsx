@@ -1,13 +1,22 @@
 
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
-import { BookOpen, Brain, Clock, HelpCircle, Check, X } from "lucide-react";
+import { BookOpen, Brain, Clock, HelpCircle, Check, X, BarChart2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/use-toast";
 
 type QuizMode = "topic" | "document" | "custom";
+
+interface QuizResult {
+  totalQuestions: number;
+  correctAnswers: number;
+  percentage: number;
+  timeSpent: number; // in seconds
+  improvements: string[];
+}
 
 const Quiz = () => {
   const [activeTab, setActiveTab] = useState<QuizMode>("topic");
@@ -15,6 +24,19 @@ const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [answers, setAnswers] = useState<number[]>([]);
+  const [quizComplete, setQuizComplete] = useState(false);
+  const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
+  const [startTime, setStartTime] = useState<number>(0);
+  const [file, setFile] = useState<File | null>(null);
+  
+  // Expanded subject list
+  const subjects = [
+    "Computer Science", "Mathematics", "Physics", "Biology", "Chemistry", 
+    "History", "Literature", "Geography", "Economics", "Psychology",
+    "Sociology", "Political Science", "Philosophy", "Art History", 
+    "Business", "Engineering", "Medicine", "Law", "Languages", "Music Theory"
+  ];
   
   // Mock quiz data
   const mockQuiz = {
@@ -61,11 +83,23 @@ const Quiz = () => {
     setCurrentQuestion(0);
     setSelectedAnswer(null);
     setShowExplanation(false);
+    setAnswers([]);
+    setQuizComplete(false);
+    setQuizResult(null);
+    setStartTime(Date.now());
+    toast({
+      title: "Quiz Started",
+      description: "Good luck with your quiz!"
+    });
   };
   
   const handleSelectAnswer = (index: number) => {
     if (selectedAnswer === null) {
       setSelectedAnswer(index);
+      // Store the answer
+      const newAnswers = [...answers];
+      newAnswers[currentQuestion] = index;
+      setAnswers(newAnswers);
     }
   };
   
@@ -76,12 +110,70 @@ const Quiz = () => {
       setShowExplanation(false);
     } else {
       // End of quiz
+      const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+      const correctCount = answers.filter(
+        (answer, index) => answer === mockQuiz.questions[index].correctAnswer
+      ).length;
+      
+      const percentage = Math.round((correctCount / mockQuiz.questions.length) * 100);
+      
+      // Generate improvement suggestions
+      const improvements: string[] = [];
+      answers.forEach((answer, index) => {
+        if (answer !== mockQuiz.questions[index].correctAnswer) {
+          improvements.push(`Review: ${mockQuiz.questions[index].question}`);
+        }
+      });
+      
+      if (improvements.length === 0) {
+        improvements.push("Great job! Try more challenging quizzes to further improve.");
+      }
+      
+      setQuizResult({
+        totalQuestions: mockQuiz.questions.length,
+        correctAnswers: correctCount,
+        percentage,
+        timeSpent,
+        improvements
+      });
+      
+      setQuizComplete(true);
       setQuizStarted(false);
     }
   };
   
   const handleViewExplanation = () => {
     setShowExplanation(true);
+  };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      toast({
+        title: "Document Uploaded",
+        description: "Your document has been uploaded successfully."
+      });
+    }
+  };
+  
+  const handleGenerateFromDocument = () => {
+    if (file) {
+      toast({
+        title: "Generating Quiz",
+        description: "Creating quiz from your document. This may take a moment..."
+      });
+      
+      // Simulate processing time
+      setTimeout(() => {
+        handleStartQuiz();
+      }, 2000);
+    } else {
+      toast({
+        title: "No Document Selected",
+        description: "Please upload a document first",
+        variant: "destructive"
+      });
+    }
   };
   
   const currentQuizQuestion = mockQuiz.questions[currentQuestion];
@@ -99,7 +191,7 @@ const Quiz = () => {
             </p>
           </header>
           
-          {!quizStarted ? (
+          {!quizStarted && !quizComplete ? (
             <Tabs defaultValue="topic" value={activeTab} onValueChange={(value) => setActiveTab(value as QuizMode)} className="space-y-6">
               <TabsList className="grid grid-cols-3 w-[400px]">
                 <TabsTrigger value="topic">By Topic</TabsTrigger>
@@ -125,13 +217,11 @@ const Quiz = () => {
                               className="w-full p-2 border border-border rounded-md"
                             >
                               <option value="">Select a subject...</option>
-                              <option value="computer-science">Computer Science</option>
-                              <option value="mathematics">Mathematics</option>
-                              <option value="physics">Physics</option>
-                              <option value="biology">Biology</option>
-                              <option value="chemistry">Chemistry</option>
-                              <option value="history">History</option>
-                              <option value="literature">Literature</option>
+                              {subjects.map((subject, index) => (
+                                <option key={index} value={subject.toLowerCase().replace(/\s+/g, '-')}>
+                                  {subject}
+                                </option>
+                              ))}
                             </select>
                           </div>
                           
@@ -217,23 +307,82 @@ const Quiz = () => {
               <TabsContent value="document" className="space-y-6">
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="text-center py-8 space-y-4">
-                      <div className="mx-auto bg-brand-50 dark:bg-brand-900/20 w-16 h-16 rounded-full flex items-center justify-center">
-                        <BookOpen className="h-8 w-8 text-brand-500" />
+                    {!file ? (
+                      <div className="text-center py-8 space-y-4">
+                        <div className="mx-auto bg-brand-50 dark:bg-brand-900/20 w-16 h-16 rounded-full flex items-center justify-center">
+                          <Upload className="h-8 w-8 text-brand-500" />
+                        </div>
+                        <h3 className="text-xl font-semibold">Generate Quiz from Document</h3>
+                        <p className="text-muted-foreground max-w-md mx-auto">
+                          Upload a document to create a quiz based on its content
+                        </p>
+                        <div className="flex justify-center gap-4 pt-4">
+                          <label className="cursor-pointer bg-brand-500 hover:bg-brand-600 text-white py-2 px-4 rounded-md">
+                            Upload Document
+                            <input
+                              type="file"
+                              accept=".pdf,.docx,.txt"
+                              className="hidden"
+                              onChange={handleFileChange}
+                            />
+                          </label>
+                        </div>
                       </div>
-                      <h3 className="text-xl font-semibold">Generate Quiz from Document</h3>
-                      <p className="text-muted-foreground max-w-md mx-auto">
-                        Upload a document or select from your library to create a quiz based on its content
-                      </p>
-                      <div className="flex justify-center gap-4 pt-4">
-                        <Button variant="outline">
-                          Upload Document
-                        </Button>
-                        <Button variant="outline">
-                          Select from Library
-                        </Button>
+                    ) : (
+                      <div className="py-8 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <BookOpen className="h-6 w-6 text-brand-500 mr-3" />
+                            <div>
+                              <h3 className="font-medium">{file.name}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {(file.size / 1024 / 1024).toFixed(2)} MB • {file.type}
+                              </p>
+                            </div>
+                          </div>
+                          <Button variant="outline" size="sm" onClick={() => setFile(null)}>
+                            Change
+                          </Button>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <label htmlFor="doc-questions" className="text-sm font-medium">
+                              Number of Questions
+                            </label>
+                            <select
+                              id="doc-questions"
+                              className="w-full p-2 border border-border rounded-md"
+                            >
+                              <option value="5">5 questions</option>
+                              <option value="10">10 questions</option>
+                              <option value="15">15 questions</option>
+                            </select>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <label htmlFor="doc-difficulty" className="text-sm font-medium">
+                              Difficulty Level
+                            </label>
+                            <select
+                              id="doc-difficulty"
+                              className="w-full p-2 border border-border rounded-md"
+                            >
+                              <option value="beginner">Beginner</option>
+                              <option value="intermediate">Intermediate</option>
+                              <option value="advanced">Advanced</option>
+                            </select>
+                          </div>
+                          
+                          <Button 
+                            className="w-full bg-brand-500 hover:bg-brand-600"
+                            onClick={handleGenerateFromDocument}
+                          >
+                            Generate Quiz from Document
+                          </Button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -313,6 +462,73 @@ const Quiz = () => {
                 </Card>
               </TabsContent>
             </Tabs>
+          ) : quizComplete ? (
+            <div className="max-w-2xl mx-auto">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart2 className="mr-2 h-5 w-5 text-brand-500" />
+                    Quiz Results
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {quizResult && (
+                    <>
+                      <div className="text-center py-6">
+                        <div className="text-5xl font-bold text-brand-500 mb-2">{quizResult.percentage}%</div>
+                        <p className="text-muted-foreground">
+                          You got {quizResult.correctAnswers} out of {quizResult.totalQuestions} questions correct
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Time spent: {Math.floor(quizResult.timeSpent / 60)}m {quizResult.timeSpent % 60}s
+                        </p>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <h3 className="font-medium">Score Breakdown</h3>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Correct Answers</span>
+                            <span className="font-medium">{quizResult.correctAnswers}/{quizResult.totalQuestions}</span>
+                          </div>
+                          <Progress value={quizResult.percentage} className="h-2" />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <h3 className="font-medium">Areas to Improve</h3>
+                        <ul className="space-y-2">
+                          {quizResult.improvements.map((improvement, index) => (
+                            <li key={index} className="flex items-start text-sm">
+                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20 text-red-500 mr-2">
+                                {index + 1}
+                              </span>
+                              <span>{improvement}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <div className="flex space-x-4 pt-4">
+                        <Button 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => {
+                            setActiveTab("topic");
+                            setQuizComplete(false);
+                          }}
+                        >
+                          Try Another Quiz
+                        </Button>
+                        <Button className="flex-1 bg-brand-500 hover:bg-brand-600">
+                          Save Results
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           ) : (
             <div className="max-w-2xl mx-auto">
               <Card>
