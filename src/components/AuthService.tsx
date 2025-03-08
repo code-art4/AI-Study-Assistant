@@ -10,6 +10,7 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
+  isGuest?: boolean;
 }
 
 interface AuthContextType {
@@ -17,6 +18,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: () => Promise<void>;
+  loginAsGuest: () => void;
   logout: () => void;
   showLoginDialog: () => void;
 }
@@ -71,6 +73,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const loginAsGuest = () => {
+    const guestUser: User = {
+      id: `guest-${Date.now()}`,
+      name: 'Guest User',
+      email: 'guest@example.com',
+      avatar: 'https://ui-avatars.com/api/?name=Guest+User&background=6366f1&color=fff',
+      isGuest: true
+    };
+    
+    setUser(guestUser);
+    localStorage.setItem('user', JSON.stringify(guestUser));
+    setShowDialog(false);
+    
+    toast({
+      title: "Guest Login Successful",
+      description: "You are now using a guest account. Your data won't be saved after logout.",
+    });
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
@@ -91,12 +112,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated: !!user,
         isLoading,
         login,
+        loginAsGuest,
         logout,
         showLoginDialog
       }}
     >
       {children}
-      <LoginDialog open={showDialog} onOpenChange={setShowDialog} onLogin={login} isLoading={isLoading} />
+      <LoginDialog 
+        open={showDialog} 
+        onOpenChange={setShowDialog} 
+        onLogin={login} 
+        onGuestLogin={loginAsGuest}
+        isLoading={isLoading} 
+      />
     </AuthContext.Provider>
   );
 };
@@ -105,10 +133,11 @@ interface LoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onLogin: () => Promise<void>;
+  onGuestLogin: () => void;
   isLoading: boolean;
 }
 
-export const LoginDialog = ({ open, onOpenChange, onLogin, isLoading }: LoginDialogProps) => {
+export const LoginDialog = ({ open, onOpenChange, onLogin, onGuestLogin, isLoading }: LoginDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -150,6 +179,14 @@ export const LoginDialog = ({ open, onOpenChange, onLogin, isLoading }: LoginDia
               <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
             </svg>
             Google
+          </Button>
+          
+          <Button
+            variant="secondary"
+            className="w-full"
+            onClick={onGuestLogin}
+          >
+            Continue as Guest
           </Button>
         </div>
         

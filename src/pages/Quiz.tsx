@@ -1,12 +1,13 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import { BookOpen, Brain, Clock, HelpCircle, Check, X, BarChart2, Upload } from "lucide-react";
+import { BookOpen, Brain, Clock, HelpCircle, Check, X, BarChart2, Upload, AlertTriangle, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/components/AuthService";
 
 type QuizMode = "topic" | "document" | "custom";
 
@@ -19,6 +20,7 @@ interface QuizResult {
 }
 
 const Quiz = () => {
+  const { isAuthenticated, showLoginDialog } = useAuth();
   const [activeTab, setActiveTab] = useState<QuizMode>("topic");
   const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -35,7 +37,12 @@ const Quiz = () => {
     "Computer Science", "Mathematics", "Physics", "Biology", "Chemistry", 
     "History", "Literature", "Geography", "Economics", "Psychology",
     "Sociology", "Political Science", "Philosophy", "Art History", 
-    "Business", "Engineering", "Medicine", "Law", "Languages", "Music Theory"
+    "Business", "Engineering", "Medicine", "Law", "Languages", "Music Theory",
+    "Environmental Science", "Anthropology", "Astronomy", "Statistics",
+    "Linguistics", "Architecture", "Accounting", "Media Studies", "Education",
+    "Sports Science", "Nutrition", "Neuroscience", "Geology", "Theater Studies",
+    "Film Studies", "Religious Studies", "Ethics", "Genetics", "Microbiology",
+    "Ecology", "Marketing", "Finance", "International Relations"
   ];
   
   // Mock quiz data
@@ -109,36 +116,60 @@ const Quiz = () => {
       setSelectedAnswer(null);
       setShowExplanation(false);
     } else {
-      // End of quiz
-      const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-      const correctCount = answers.filter(
-        (answer, index) => answer === mockQuiz.questions[index].correctAnswer
-      ).length;
-      
-      const percentage = Math.round((correctCount / mockQuiz.questions.length) * 100);
-      
-      // Generate improvement suggestions
-      const improvements: string[] = [];
-      answers.forEach((answer, index) => {
-        if (answer !== mockQuiz.questions[index].correctAnswer) {
-          improvements.push(`Review: ${mockQuiz.questions[index].question}`);
-        }
-      });
-      
-      if (improvements.length === 0) {
-        improvements.push("Great job! Try more challenging quizzes to further improve.");
+      // Calculate results
+      calculateQuizResults();
+    }
+  };
+  
+  const calculateQuizResults = () => {
+    // End of quiz
+    const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+    const correctCount = answers.filter(
+      (answer, index) => answer === mockQuiz.questions[index].correctAnswer
+    ).length;
+    
+    const percentage = Math.round((correctCount / mockQuiz.questions.length) * 100);
+    
+    // Generate improvement suggestions
+    const improvements: string[] = [];
+    answers.forEach((answer, index) => {
+      if (answer !== mockQuiz.questions[index].correctAnswer) {
+        improvements.push(`Review: ${mockQuiz.questions[index].question}`);
       }
-      
-      setQuizResult({
-        totalQuestions: mockQuiz.questions.length,
-        correctAnswers: correctCount,
+    });
+    
+    if (improvements.length === 0) {
+      improvements.push("Great job! Try more challenging quizzes to further improve.");
+    }
+    
+    setQuizResult({
+      totalQuestions: mockQuiz.questions.length,
+      correctAnswers: correctCount,
+      percentage,
+      timeSpent,
+      improvements
+    });
+    
+    setQuizComplete(true);
+    setQuizStarted(false);
+    
+    // Save result to localStorage
+    saveQuizResult(percentage, correctCount, mockQuiz.questions.length);
+  };
+  
+  const saveQuizResult = (percentage: number, correct: number, total: number) => {
+    try {
+      const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+      results.push({
+        date: new Date().toISOString(),
+        topic: mockQuiz.title,
         percentage,
-        timeSpent,
-        improvements
+        correctAnswers: correct,
+        totalQuestions: total
       });
-      
-      setQuizComplete(true);
-      setQuizStarted(false);
+      localStorage.setItem('quizResults', JSON.stringify(results));
+    } catch (error) {
+      console.error("Error saving quiz result:", error);
     }
   };
   
@@ -157,6 +188,16 @@ const Quiz = () => {
   };
   
   const handleGenerateFromDocument = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use this feature.",
+        variant: "destructive"
+      });
+      showLoginDialog();
+      return;
+    }
+    
     if (file) {
       toast({
         title: "Generating Quiz",
@@ -475,13 +516,36 @@ const Quiz = () => {
                   {quizResult && (
                     <>
                       <div className="text-center py-6">
-                        <div className="text-5xl font-bold text-brand-500 mb-2">{quizResult.percentage}%</div>
+                        <div className={`text-5xl font-bold mb-2 ${
+                          quizResult.percentage >= 80 ? "text-green-500" : 
+                          quizResult.percentage >= 60 ? "text-yellow-500" : "text-red-500"
+                        }`}>
+                          {quizResult.percentage}%
+                        </div>
                         <p className="text-muted-foreground">
                           You got {quizResult.correctAnswers} out of {quizResult.totalQuestions} questions correct
                         </p>
                         <p className="text-sm text-muted-foreground mt-2">
                           Time spent: {Math.floor(quizResult.timeSpent / 60)}m {quizResult.timeSpent % 60}s
                         </p>
+                        <div className="mt-4 flex justify-center">
+                          {quizResult.percentage >= 80 ? (
+                            <div className="flex items-center text-green-500">
+                              <Award className="mr-2 h-5 w-5" />
+                              <span className="font-medium">Excellent work!</span>
+                            </div>
+                          ) : quizResult.percentage >= 60 ? (
+                            <div className="flex items-center text-yellow-500">
+                              <AlertTriangle className="mr-2 h-5 w-5" />
+                              <span className="font-medium">Good effort, but room for improvement</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center text-red-500">
+                              <AlertTriangle className="mr-2 h-5 w-5" />
+                              <span className="font-medium">Needs more study</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       
                       <div className="space-y-3">
@@ -491,7 +555,10 @@ const Quiz = () => {
                             <span>Correct Answers</span>
                             <span className="font-medium">{quizResult.correctAnswers}/{quizResult.totalQuestions}</span>
                           </div>
-                          <Progress value={quizResult.percentage} className="h-2" />
+                          <Progress value={quizResult.percentage} className={`h-2 ${
+                            quizResult.percentage >= 80 ? "bg-green-100" : 
+                            quizResult.percentage >= 60 ? "bg-yellow-100" : "bg-red-100"
+                          }`} />
                         </div>
                       </div>
                       
@@ -506,6 +573,20 @@ const Quiz = () => {
                               <span>{improvement}</span>
                             </li>
                           ))}
+                        </ul>
+                      </div>
+                      
+                      <div className="p-4 bg-muted/40 rounded-md">
+                        <h3 className="font-medium mb-2">Recommended Study Resources</h3>
+                        <ul className="space-y-2 text-sm">
+                          <li className="flex items-center">
+                            <BookOpen className="h-4 w-4 mr-2 text-brand-500" />
+                            <span>"Machine Learning: A Comprehensive Guide" - Chapter 3</span>
+                          </li>
+                          <li className="flex items-center">
+                            <BookOpen className="h-4 w-4 mr-2 text-brand-500" />
+                            <span>"Introduction to AI Algorithms" - Section 2.4</span>
+                          </li>
                         </ul>
                       </div>
                       

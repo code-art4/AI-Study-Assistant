@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/components/AuthService";
 
 const EXAMPLE_SUMMARIES = {
   "Introduction to Machine Learning": {
@@ -56,6 +57,7 @@ const EXAMPLE_SUMMARIES = {
 };
 
 const Summarizer = () => {
+  const { isAuthenticated, showLoginDialog } = useAuth();
   const [activeTab, setActiveTab] = useState("upload");
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -120,6 +122,15 @@ const Summarizer = () => {
   const handleGenerateSummary = () => {
     if (!file) return;
     
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use the AI summarizer."
+      });
+      showLoginDialog();
+      return;
+    }
+    
     setIsGenerating(true);
     toast({
       title: "Generating Summary",
@@ -128,19 +139,53 @@ const Summarizer = () => {
     
     // Simulate API call with delay
     setTimeout(() => {
-      // Mock summary generation based on file name
-      const mockSummary = {
-        text: "This is an AI-generated summary of your document. The document covers several key topics and provides detailed explanations of complex concepts. The main themes include theoretical foundations, practical applications, and recent advancements in the field. Several case studies are presented to illustrate the practical implications of the theoretical concepts discussed throughout the document.",
-        keyPoints: [
-          "Key theoretical foundations are established in the first section",
-          "Practical applications are demonstrated through case studies",
-          "Recent advancements suggest new directions for future research",
-          "Methodological approaches vary depending on context and requirements",
-          "Limitations and constraints are acknowledged and discussed"
-        ],
-        originalLength: `${Math.floor(Math.random() * 50) + 10} pages`,
-        summaryLength: `${Math.floor(Math.random() * 5) + 1} pages`
-      };
+      // Generate a more realistic summary based on the file name
+      const fileName = file.name.toLowerCase();
+      let mockSummary;
+      
+      if (fileName.includes("physics") || fileName.includes("quantum")) {
+        mockSummary = {
+          text: EXAMPLE_SUMMARIES["Quantum Physics Explained"].summary,
+          keyPoints: EXAMPLE_SUMMARIES["Quantum Physics Explained"].keyPoints,
+          originalLength: `${Math.floor(Math.random() * 30) + 15} pages`,
+          summaryLength: `${Math.floor(Math.random() * 5) + 1} pages`
+        };
+      } else if (fileName.includes("history") || fileName.includes("renaissance")) {
+        mockSummary = {
+          text: EXAMPLE_SUMMARIES["World History: The Renaissance"].summary,
+          keyPoints: EXAMPLE_SUMMARIES["World History: The Renaissance"].keyPoints,
+          originalLength: `${Math.floor(Math.random() * 30) + 15} pages`,
+          summaryLength: `${Math.floor(Math.random() * 5) + 1} pages`
+        };
+      } else if (fileName.includes("code") || fileName.includes("program") || fileName.includes("python")) {
+        mockSummary = {
+          text: EXAMPLE_SUMMARIES["Programming in Python"].summary,
+          keyPoints: EXAMPLE_SUMMARIES["Programming in Python"].keyPoints,
+          originalLength: `${Math.floor(Math.random() * 30) + 15} pages`,
+          summaryLength: `${Math.floor(Math.random() * 5) + 1} pages`
+        };
+      } else if (fileName.includes("machine") || fileName.includes("learning") || fileName.includes("ai")) {
+        mockSummary = {
+          text: EXAMPLE_SUMMARIES["Introduction to Machine Learning"].summary,
+          keyPoints: EXAMPLE_SUMMARIES["Introduction to Machine Learning"].keyPoints,
+          originalLength: `${Math.floor(Math.random() * 30) + 15} pages`,
+          summaryLength: `${Math.floor(Math.random() * 5) + 1} pages`
+        };
+      } else {
+        // Default summary
+        mockSummary = {
+          text: "This document covers several key concepts and theories relevant to the subject area. The main themes include theoretical foundations, practical applications, and recent developments in the field. Several case studies are presented to illustrate the practical implications of the theoretical concepts discussed throughout the document.",
+          keyPoints: [
+            "Key theoretical foundations are established in the first section",
+            "Practical applications are demonstrated through case studies",
+            "Recent developments suggest new directions for future research",
+            "Methodological approaches vary depending on context and requirements",
+            "Limitations and constraints are acknowledged and discussed"
+          ],
+          originalLength: `${Math.floor(Math.random() * 30) + 15} pages`,
+          summaryLength: `${Math.floor(Math.random() * 5) + 1} pages`
+        };
+      }
       
       setSummary(mockSummary);
       setIsGenerating(false);
@@ -178,6 +223,32 @@ const Summarizer = () => {
       toast({
         title: "Sample Summary Loaded",
         description: `Viewing sample summary: ${title}`
+      });
+    }
+  };
+  
+  const handleViewHistory = (id: string) => {
+    const historyItem = summaryHistory.find(item => item.id === id);
+    if (historyItem) {
+      // Simulate loading a saved summary
+      const mockSummary = {
+        text: "This is a previously generated summary retrieved from your history. The document covered key concepts and theoretical frameworks relevant to the subject matter, with practical examples and case studies to illustrate the applications of these theories.",
+        keyPoints: [
+          "Main theoretical frameworks were outlined in detail",
+          "Practical examples demonstrated real-world applications",
+          "Key findings were supported by relevant research",
+          "Limitations and future research directions were discussed"
+        ],
+        originalLength: "18 pages",
+        summaryLength: "3 pages"
+      };
+      
+      setSummary(mockSummary);
+      setActiveTab("upload");
+      
+      toast({
+        title: "History Item Loaded",
+        description: `Viewing summary: ${historyItem.title}`
       });
     }
   };
@@ -259,7 +330,7 @@ const Summarizer = () => {
                             </div>
                             <div>
                               <h3 className="font-medium">File uploaded successfully</h3>
-                              <p className="text-sm text-muted-foreground">{file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                              <p className="text-sm text-muted-foreground">{file?.name} ({(file?.size ? file.size / 1024 / 1024 : 0).toFixed(2)} MB)</p>
                             </div>
                             <Button
                               variant="ghost"
@@ -445,7 +516,13 @@ const Summarizer = () => {
                             </p>
                           </div>
                         </div>
-                        <Button variant="ghost" size="sm">View</Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleViewHistory(item.id)}
+                        >
+                          View
+                        </Button>
                       </div>
                     ))}
                   </div>
@@ -462,7 +539,7 @@ const Summarizer = () => {
             <TabsContent value="examples" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {Object.keys(EXAMPLE_SUMMARIES).map((title, index) => (
-                  <Card key={index} className="hover-effect">
+                  <Card key={index} className="hover:shadow-md transition-shadow duration-200">
                     <CardContent className="pt-6">
                       <div className="flex items-start">
                         <div className="rounded-md bg-brand-50 dark:bg-brand-900/20 p-2 mr-3">
