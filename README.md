@@ -2,8 +2,8 @@
 
 ## Project Info
 
-**Live Demo**: [Coming Soon]  
-**GitHub Repository**: [Your Repo URL]
+**Live Demo**: [Edu Whisperer](https://edu-whisperer.vercel.app/)
+**GitHub Repository**: [Github link](https://github.com/code-art4/AI-Study-Assistant)
 
 ## What is this project about?
 
@@ -22,9 +22,6 @@ The AI-Based Study Assistant is a smart tool that helps students **organize stud
 This project is built with:
 
 - **React** (with TypeScript for type safety)
-- **Firebase** (authentication & database)
-- **OpenAI API** (for AI-generated quizzes & summaries)
-- **OCR API** (for extracting text from images/PDFs)
 - **Tailwind CSS** (for styling & layout)
 
 ## How to Set Up the Project
