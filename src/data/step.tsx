@@ -1,13 +1,13 @@
 import { PenTool, Brain, Clock } from 'lucide-react';
 
-interface IStep {
+interface ISteps {
   step: number;
   title: string;
   description: string;
   icon: JSX.Element;
 }
 
-const Steps: () => IStep[] = () => [
+const Steps: ISteps[] = [
   {
     step: 1,
     title: 'Set Your Goals',

@@ -13,7 +13,7 @@ const Works = () => {
         </div>
 
         <div className='grid md:grid-cols-3 gap-8 md:gap-12 max-w-5xl mx-auto'>
-          {Steps().map((item, index) => (
+          {Steps.map((item, index) => (
             <div
               key={index}
               className='relative animate-on-scroll opacity-0 translate-y-4 transition-all duration-700'
