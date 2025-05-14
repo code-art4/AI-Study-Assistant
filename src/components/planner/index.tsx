@@ -5,9 +5,40 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { format } from 'date-fns';
 import PlanDetails from '@/components/planner/Details';
+import { toast } from '@/components/ui/use-toast';
 
 const Planner = (props) => {
-  const { showPlanDetails, handleCalendarSync } = props;
+  const {
+    showPlanDetails,
+    handleCalendarSync,
+    setFormData,
+    setActiveTab,
+    handleGeneratePlan,
+    handleEditPlan,
+    handleDeletePlan,
+    handleViewPlan,
+    handleInputChange,
+  } = props;
+
+  const handleUseTemplate = (templateTitle: string) => {
+    setFormData({
+      title: templateTitle,
+      subject: '',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date(new Date().setDate(new Date().getDate() + 14))
+        .toISOString()
+        .split('T')[0],
+      goal: `Complete ${templateTitle} successfully`,
+      topics: '',
+    });
+
+    setActiveTab('create');
+
+    toast({
+      title: 'Template Selected',
+      description: `The ${templateTitle} template has been loaded.`,
+    });
+  };
 
   return (
     <main className='pt-24 pb-16'>
