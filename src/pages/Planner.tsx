@@ -11,7 +11,7 @@ import { StudyPlan } from '@/types';
 import { format } from 'date-fns';
 import PlanDetails from '@/components/planner/Details';
 import DialogComponent from '@/components/planner/Dialog';
-import Planner from './../components/planner/index';
+import PlannerComponent from './../components/planner/index';
 
 const Planner = () => {
   const [activeTab, setActiveTab] = useState('create');
@@ -143,7 +143,7 @@ const Planner = () => {
   return (
     <div className='min-h-screen bg-background'>
       <Navbar />
-      <Planner {...PlannerProps} />
+      <PlannerComponent {...PlannerProps} />
 
       <DialogComponent />
     </div>

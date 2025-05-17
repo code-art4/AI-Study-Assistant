@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import Navbar from '@/components/Navbar';
 import DashboardComponent from '@/components/dashboard';
 import { isToday } from '@/utils/dateUtils';
 import { StudyPlan, StudyTask, UserProgress } from '@/types';
 import { mockPlans, mockProgress, mockTasks } from '@/data/mockData';
+import useQuery from '@/hooks/useQuery';
+import axios from 'axios';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard = () => {
   const [progress, setProgress] = useState<UserProgress>(mockProgress);
@@ -11,35 +14,19 @@ const Dashboard = () => {
   const [plans, setPlans] = useState<StudyPlan[]>(mockPlans);
 
   // Mock loading state
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Simulate data loading
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const { loading, status, error, data } = useQuery({
+    url: 'tasks/',
+    method: 'get',
+  });
 
   // Toggle task completion
   const toggleTaskCompletion = (taskId: string) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
-
-    // Update progress
-    setProgress((prev) => {
-      const completedCount = tasks.filter((t) =>
-        t.id === taskId ? !t.completed : t.completed
-      ).length;
-      return {
-        ...prev,
-        completedTasks: completedCount,
-      };
-    });
+    // useQuery({
+    //   url: 'tasks/task/update/',
+    //   method: 'get',
+    // });
   };
 
   // Filter tasks due today
@@ -56,16 +43,16 @@ const Dashboard = () => {
   const overviewProps = {
     completionPercentage,
     progress,
-    tasksToday,
+    tasks: data?.data,
     plans,
     toggleTaskCompletion,
   };
 
-  const tasksProps = { tasksDue, toggleTaskCompletion };
+  // const tasksProps = { tasks: data?.data, toggleTaskCompletion };
 
   const dashboardComponentProps = {
     overviewProps,
-    tasksProps,
+    tasks: data?.data,
     plans,
   };
 
@@ -79,7 +66,15 @@ const Dashboard = () => {
             Track your progress, manage tasks, and optimize your study time
           </p>
         </header>
-        <DashboardComponent {...dashboardComponentProps} />
+        {loading ? (
+          <div className='space-y-4'>
+            <Skeleton className='h-8 w-1/3' /> {/* Title placeholder */}
+            <Skeleton className='h-24 w-full' /> {/* First card */}
+            <Skeleton className='h-24 w-full' /> {/* Second card */}
+          </div>
+        ) : (
+          <DashboardComponent {...dashboardComponentProps} />
+        )}
       </main>
     </div>
   );

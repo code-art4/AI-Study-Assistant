@@ -5,7 +5,7 @@ import Plans from './Plans';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Dashboard = (props) => {
-  const { overviewProps, tasksProps, plans } = props;
+  const { overviewProps, tasks, plans } = props;
 
   const [activeTab, setActiveTab] = useState('overview');
   return (
@@ -21,7 +21,7 @@ const Dashboard = (props) => {
         <TabsTrigger value='plans'>Study Plans</TabsTrigger>
       </TabsList>
       <Overview {...overviewProps} />
-      <Tasks {...tasksProps} />
+      <Tasks tasks={tasks} />
       <Plans plans={plans} />
     </Tabs>
   );

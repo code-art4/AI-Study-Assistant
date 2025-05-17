@@ -7,7 +7,7 @@ export interface StudyTask {
   priority: 'high' | 'medium' | 'low';
   completed: boolean;
   dueDate: Date;
-  estimatedTime: number; // in minutes
+  timeToFinish: string; // in minutes
   tags: string[];
 }
 

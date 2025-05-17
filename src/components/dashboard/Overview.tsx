@@ -14,25 +14,24 @@ import FeatureCard from '@/components/FeatureCard';
 import { Button } from '@/components/ui/button';
 import { TabsContent } from '@/components/ui/tabs';
 import StudyPlanCard from '@/components/StudyPlanCard';
-import { formatDuration } from '@/utils/dateUtils';
+import { formatDuration, isToday } from '@/utils/dateUtils';
 import { StudyPlan, StudyTask, UserProgress } from '@/types';
+import Tasks from './Tasks';
+import Task from './Task';
 
 interface IOverview {
   completionPercentage: number;
   progress: UserProgress;
-  tasksToday: StudyTask[];
+  tasks: StudyTask[];
   plans: StudyPlan[];
   toggleTaskCompletion: (task: string) => void;
 }
 
 const Overview = (props: IOverview) => {
-  const {
-    completionPercentage,
-    progress,
-    tasksToday,
-    plans,
-    toggleTaskCompletion,
-  } = props;
+  const { progress, tasks, plans, toggleTaskCompletion } = props;
+
+  const completionPercentage =
+    (tasks?.filter((task) => task.completed).length / tasks?.length) * 100;
 
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -53,7 +52,8 @@ const Overview = (props: IOverview) => {
             </div>
             <Progress value={completionPercentage} className='h-2' />
             <p className='text-xs text-muted-foreground mt-2'>
-              {progress.completedTasks} of {progress.totalTasks} tasks completed
+              {tasks?.filter((task) => task.completed)?.length} of{' '}
+              {tasks?.length} tasks completed
             </p>
           </CardContent>
         </Card>
@@ -124,44 +124,14 @@ const Overview = (props: IOverview) => {
 
       {/* Today's Tasks */}
       <h2 className='text-xl font-semibold mt-8 mb-4'>Today's Tasks</h2>
-      {tasksToday.length > 0 ? (
+      {tasks?.length > 0 ? (
         <div className='bg-white dark:bg-gray-800 rounded-xl border border-border shadow-sm p-5'>
           <div className='space-y-4'>
-            {tasksToday.map((task) => (
-              <div key={task.id} className='flex items-start'>
-                <div className='flex h-5 items-center mr-3'>
-                  <input
-                    type='checkbox'
-                    checked={task.completed}
-                    onChange={() => toggleTaskCompletion(task.id)}
-                    className='h-4 w-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500'
-                  />
-                </div>
-                <div className='flex-1'>
-                  <p
-                    className={`font-medium ${
-                      task.completed ? 'line-through text-muted-foreground' : ''
-                    }`}
-                  >
-                    {task.title}
-                  </p>
-                  <p className='text-sm text-muted-foreground'>
-                    {task.subject} · {formatDuration(task.estimatedTime)}
-                  </p>
-                </div>
-                <div
-                  className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    task.priority === 'high'
-                      ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                      : task.priority === 'medium'
-                      ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
-                      : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                  }`}
-                >
-                  {task.priority}
-                </div>
-              </div>
-            ))}
+            {tasks.map((task) => {
+              if (isToday(task.dueDate)) {
+                return <Task task={task} />;
+              }
+            })}
           </div>
 
           <div className='mt-6'>

@@ -13,6 +13,7 @@ const Planner = (props) => {
     handleCalendarSync,
     setFormData,
     setActiveTab,
+    activeTab,
     handleGeneratePlan,
     handleEditPlan,
     handleDeletePlan,
