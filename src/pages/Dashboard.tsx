@@ -10,17 +10,35 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard = () => {
   const [progress, setProgress] = useState<UserProgress>(mockProgress);
-  const [tasks, setTasks] = useState<StudyTask[]>(mockTasks);
-  const [plans, setPlans] = useState<StudyPlan[]>(mockPlans);
+  // const [tasks, setTasks] = useState<StudyTask[]>(mockTasks);
+  // const [plans, setPlans] = useState<StudyPlan[]>(mockPlans);
 
   // Mock loading state
   // const [loading, setLoading] = useState(true);
 
-  const { loading, status, error, data } = useQuery({
+  const {
+    loading: isTasksLoading,
+    status: tasksStatus,
+    error: tasksError,
+    data: returnedTasks,
+  } = useQuery({
     url: 'tasks/',
     method: 'get',
   });
 
+  const {
+    loading: isPlansLoading,
+    status: planStatus,
+    error: planError,
+    data: returnedPlans,
+  } = useQuery({
+    url: 'studyPlans/',
+    method: 'get',
+  });
+
+  const tasks = returnedTasks?.data;
+  const plans = returnedPlans?.data;
+  console.log(returnedPlans, returnedTasks);
   // Toggle task completion
   const toggleTaskCompletion = (taskId: string) => {
     // useQuery({
@@ -28,12 +46,6 @@ const Dashboard = () => {
     //   method: 'get',
     // });
   };
-
-  // Filter tasks due today
-  const tasksToday = tasks.filter((task) => isToday(task.dueDate));
-  const tasksDue = tasks
-    .filter((task) => !task.completed)
-    .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
 
   // Calculate completion percentage
   const completionPercentage = Math.round(
@@ -43,7 +55,7 @@ const Dashboard = () => {
   const overviewProps = {
     completionPercentage,
     progress,
-    tasks: data?.data,
+    tasks,
     plans,
     toggleTaskCompletion,
   };
@@ -52,7 +64,7 @@ const Dashboard = () => {
 
   const dashboardComponentProps = {
     overviewProps,
-    tasks: data?.data,
+    tasks,
     plans,
   };
 
@@ -66,7 +78,7 @@ const Dashboard = () => {
             Track your progress, manage tasks, and optimize your study time
           </p>
         </header>
-        {loading ? (
+        {isTasksLoading || isPlansLoading ? (
           <div className='space-y-4'>
             <Skeleton className='h-8 w-1/3' /> {/* Title placeholder */}
             <Skeleton className='h-24 w-full' /> {/* First card */}

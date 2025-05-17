@@ -29,6 +29,7 @@ interface IOverview {
 
 const Overview = (props: IOverview) => {
   const { progress, tasks, plans, toggleTaskCompletion } = props;
+  console.log(plans);
 
   const completionPercentage =
     (tasks?.filter((task) => task.completed).length / tasks?.length) * 100;
@@ -129,7 +130,7 @@ const Overview = (props: IOverview) => {
           <div className='space-y-4'>
             {tasks.map((task) => {
               if (isToday(task.dueDate)) {
-                return <Task task={task} />;
+                return <Task task={task} key={task._id} />;
               }
             })}
           </div>
@@ -161,9 +162,9 @@ const Overview = (props: IOverview) => {
       {/* Current Study Plans */}
       <h2 className='text-xl font-semibold mt-8 mb-4'>Active Study Plans</h2>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        {plans.slice(0, 2).map((plan) => (
+        {plans?.slice(0, 2).map((plan) => (
           <StudyPlanCard
-            key={plan.id}
+            key={plan._id}
             plan={plan}
             onClick={() => setActiveTab('plans')}
           />

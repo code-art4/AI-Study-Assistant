@@ -19,7 +19,7 @@ const useQuery = (queryProps) => {
   }, []);
 
   // Return the state variables and the load function
-  return apiResult;
+  return { ...apiResult, apiCall };
 };
 
 export default useQuery;

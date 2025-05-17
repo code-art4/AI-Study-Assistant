@@ -4,14 +4,13 @@ import { AxiosResponse } from 'axios';
 export enum HttpMethod {
     GET = 'get',
     POST = 'post',
+    PUT = 'PUT'
 }
 
 // Interface to define the options object for useQuery hook
 export interface QueryOptions {
-    url: string;
+    url?: string;
     method?: HttpMethod; // Defaults to GET if not specified
-    successFunc: (res: AxiosResponse) => void;
-    errorFunc?: (err: Error) => void;
 }
 
 // Interface to define the return object of useQuery hook

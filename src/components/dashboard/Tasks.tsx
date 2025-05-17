@@ -25,7 +25,7 @@ const Tasks = (props) => {
       <div className='bg-white dark:bg-gray-800 rounded-xl border border-border shadow-sm p-5'>
         <div className='space-y-4'>
           {tasks?.length > 0 ? (
-            tasks.map((task) => <Task task={task} />)
+            tasks.map((task) => <Task task={task} key={task._id} />)
           ) : (
             <div className='text-center py-8'>
               <p className='text-muted-foreground'>No tasks remaining</p>

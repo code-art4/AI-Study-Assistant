@@ -1,8 +1,20 @@
+// apiCall.ts
 import axios, { AxiosResponse } from 'axios';
 
-const apiCall = async (props): Promise<AxiosResponse | void> => {
-  const { setApiResult, url, method, values, successFunc } = props;
+interface ApiCallProps {
+  setApiResult?: React.Dispatch<React.SetStateAction<any>>;
+  url: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  values?: any;
+}
 
+const apiCall = async ({
+  setApiResult,
+  url,
+  method,
+  values,
+}: ApiCallProps): Promise<AxiosResponse | void> => {
   const axiosUrl =
     import.meta.env.VITE_MODE === 'development'
       ? import.meta.env.VITE_API_URL
@@ -10,13 +22,14 @@ const apiCall = async (props): Promise<AxiosResponse | void> => {
 
   axios.defaults.baseURL = axiosUrl;
 
-  // Set loading state
-  setApiResult((prev) => ({
-    ...prev,
-    loading: true,
-    status: '',
-    error: '',
-  }));
+  if (setApiResult) {
+    setApiResult((prev) => ({
+      ...prev,
+      loading: true,
+      status: '',
+      error: '',
+    }));
+  }
 
   try {
     const response = await axios.request({
@@ -32,9 +45,8 @@ const apiCall = async (props): Promise<AxiosResponse | void> => {
       data: response.data,
     }));
 
-    successFunc?.(response.data);
     return response.data;
-  } catch (err) {
+  } catch (err: any) {
     setApiResult((prev) => ({
       ...prev,
       loading: false,

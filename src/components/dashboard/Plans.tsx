@@ -21,7 +21,7 @@ const Plans = ({ plans }: IPlans) => {
 
       {/* Study Plans */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        {plans.map((plan) => (
+        {plans?.map((plan) => (
           <StudyPlanCard
             key={plan.id}
             plan={plan}

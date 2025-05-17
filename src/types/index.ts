@@ -1,6 +1,6 @@
 
 export interface StudyTask {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   subject: string;
@@ -29,7 +29,7 @@ export interface StudyPlan {
   startDate: Date;
   endDate: Date;
   subject: string;
-  sessions: StudySession[];
+  session: StudySession[];
 }
 
 export interface Document {
