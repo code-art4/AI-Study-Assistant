@@ -12,6 +12,8 @@ const Planner = (props) => {
     showPlanDetails,
     handleCalendarSync,
     setFormData,
+    formData,
+    plans,
     setActiveTab,
     activeTab,
     handleGeneratePlan,
@@ -193,15 +195,15 @@ const Planner = (props) => {
                     </CardContent>
                   </Card>
 
-                  {plans.length > 0 && (
+                  {plans?.length > 0 && (
                     <div className='mt-6'>
                       <h3 className='text-lg font-medium mb-4'>
                         Your Study Plans
                       </h3>
                       <div className='space-y-4'>
-                        {plans.map((plan) => (
+                        {plans?.map((plan) => (
                           <Card
-                            key={plan.id}
+                            key={plan._id}
                             className='hover-effect cursor-pointer'
                             onClick={() => handleViewPlan(plan)}
                           >
@@ -220,16 +222,16 @@ const Planner = (props) => {
                                 <div className='flex flex-col items-end'>
                                   <div className='text-sm font-medium mb-1'>
                                     {
-                                      plan.sessions.filter((s) => s.completed)
+                                      plan.session?.filter((s) => s.completed)
                                         .length
                                     }
-                                    /{plan.sessions.length} Sessions
+                                    /{plan.session?.length} Sessions
                                   </div>
                                   <Progress
                                     value={
-                                      (plan.sessions.filter((s) => s.completed)
+                                      (plan.session?.filter((s) => s.completed)
                                         .length /
-                                        plan.sessions.length) *
+                                        plan.session?.length) *
                                       100
                                     }
                                     className='h-2 w-24'

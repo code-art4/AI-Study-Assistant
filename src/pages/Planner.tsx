@@ -6,18 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/components/ui/use-toast';
-import mockPlans from '../data/mockPlans';
 import { StudyPlan } from '@/types';
 import { format } from 'date-fns';
 import PlanDetails from '@/components/planner/Details';
 import DialogComponent from '@/components/planner/Dialog';
 import PlannerComponent from './../components/planner/index';
+import useQuery from '@/hooks/useQuery';
 
 const Planner = () => {
   const [activeTab, setActiveTab] = useState('create');
   const [showPlanDetails, setShowPlanDetails] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<StudyPlan | null>(null);
-  const [plans, setPlans] = useState<StudyPlan[]>(mockPlans);
+  // const [plans, setPlans] = useState<StudyPlan[]>();
   const [formData, setFormData] = useState({
     title: '',
     subject: '',
@@ -27,6 +27,16 @@ const Planner = () => {
     topics: '',
   });
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+
+  const {
+    loading: isPlansLoading,
+    status: plansStatus,
+    error: plansError,
+    data: returnedPlans,
+  } = useQuery({
+    url: 'studyPlans/',
+    method: 'get',
+  });
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -41,7 +51,7 @@ const Planner = () => {
   };
 
   const handleDeletePlan = (planId: string) => {
-    setPlans(plans.filter((p) => p.id !== planId));
+    // setPlans(plans.filter((p) => p.id !== planId));
     setShowPlanDetails(false);
     toast({
       title: 'Plan Deleted',
@@ -103,7 +113,7 @@ const Planner = () => {
           })),
       };
 
-      setPlans((prev) => [newPlan, ...prev]);
+      // setPlans((prev) => [newPlan, ...prev]);
       setCurrentPlan(newPlan);
       setShowPlanDetails(true);
 
@@ -131,6 +141,8 @@ const Planner = () => {
   const PlannerProps = {
     showPlanDetails,
     handleCalendarSync,
+    formData,
+    plans: returnedPlans?.data,
     setFormData,
     setActiveTab,
     handleGeneratePlan,
