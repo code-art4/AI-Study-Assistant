@@ -11,6 +11,7 @@ import Planner from "./pages/Planner";
 import Summarizer from "./pages/Summarizer";
 import Quiz from "./pages/Quiz";
 import NotFound from "./pages/NotFound";
+import StudyPlanPage from "./pages/StudyPlan";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/planner" element={<Planner />} />
             <Route path="/summarizer" element={<Summarizer />} />
             <Route path="/quiz" element={<Quiz />} />
+            {/* <Route path="/studyPlan" element={<StudyPlanPage/>} /> */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -6,6 +6,7 @@ import {
   Edit2,
   Trash2,
   PlusCircle,
+  Lock,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { StudyPlan } from '@/types';
@@ -21,10 +22,11 @@ interface PlanDetailsProps {
 
 const PlanDetails = ({ plan, onEdit, onDelete }: PlanDetailsProps) => {
   // Calculate completion percentage
-  const completedSessions = plan.sessions.filter(
+  const completedSessions = plan?.sessions.filter(
     (session) => session.completed
   ).length;
   const totalSessions = plan.sessions.length;
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   const completionPercentage = Math.round(
     (completedSessions / totalSessions) * 100
   );
@@ -63,8 +65,8 @@ const PlanDetails = ({ plan, onEdit, onDelete }: PlanDetailsProps) => {
               <h3 className='font-medium'>Duration</h3>
             </div>
             <p className='text-sm text-muted-foreground'>
-              {FormData(plan.startDate, 'MMM dd, yyyy')} -{' '}
-              {FormData(plan.endDate, 'MMM dd, yyyy')}
+              {(plan.startDate.toLocaleDateString("en-US", options))} -{' '}
+              {(plan.endDate.toLocaleDateString("en-US", options))}
             </p>
             <p className='text-sm font-medium mt-1'>
               {daysRemaining} days remaining

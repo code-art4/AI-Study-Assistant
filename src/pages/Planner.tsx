@@ -23,20 +23,29 @@ const Planner = () => {
     subject: '',
     startDate: '',
     endDate: '',
-    goal: '',
-    topics: '',
+    studyGoal: '',
+    category: '',
   });
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
+  enum HttpMethod {
+  GET = 'get',
+  POST = 'post',
+}
+
   const {
-    loading: isPlansLoading,
-    status: plansStatus,
+    loadFn: fetchPlans,
+    loading: plansLoading,
     error: plansError,
-    data: returnedPlans,
+    success: returnedPlans
   } = useQuery({
     url: 'studyPlans/',
-    method: 'get',
+    method: HttpMethod.GET,
   });
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -58,6 +67,7 @@ const Planner = () => {
       description: 'Your study plan has been deleted successfully.',
     });
   };
+  
 
   const handleEditPlan = () => {
     // In a real app, we would populate the form with the current plan data
@@ -68,6 +78,15 @@ const Planner = () => {
       description: 'You can now edit your study plan.',
     });
   };
+
+   const {
+    loadFn: createTask,
+    loading,
+    error,
+    success
+  } = useQuery({
+    url: 'studyPlans/create',
+  });
 
   const handleGeneratePlan = () => {
     // Check if dates are valid
@@ -96,7 +115,7 @@ const Planner = () => {
         id: Date.now().toString(),
         title: formData.title,
         description: `Study plan for ${formData.subject} based on your goals and schedule`,
-        goal: formData.goal,
+        studyGoal: formData.studyGoal,
         startDate: new Date(formData.startDate),
         endDate: new Date(formData.endDate),
         subject: formData.subject,
@@ -123,8 +142,8 @@ const Planner = () => {
         subject: '',
         startDate: '',
         endDate: '',
-        goal: '',
-        topics: '',
+        studyGoal: '',
+        category: '',
       });
 
       toast({
@@ -132,6 +151,8 @@ const Planner = () => {
         description: 'Your study plan has been generated successfully.',
       });
     }, 2000);
+
+    createTask(formData);
   };
 
   const handleCalendarSync = () => {
@@ -142,6 +163,7 @@ const Planner = () => {
     showPlanDetails,
     handleCalendarSync,
     formData,
+    currentPlan,
     plans: returnedPlans?.data,
     setFormData,
     setActiveTab,

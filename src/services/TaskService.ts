@@ -21,7 +21,7 @@ class TaskService {
         tasksArray.forEach(task => {
           // Convert string dates back to Date objects
           task.dueDate = new Date(task.dueDate);
-          this.tasks.set(task.id, task);
+          this.tasks.set(task._id, task);
         });
       }
       
@@ -63,7 +63,7 @@ class TaskService {
   
   addTask(task: Omit<StudyTask, 'id'>): StudyTask {
     const id = `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const newTask: StudyTask = { ...task, id };
+    const newTask: StudyTask = { ...task, _id: id };
     this.tasks.set(id, newTask);
     this.saveToStorage();
     return newTask;
@@ -164,7 +164,6 @@ class TaskService {
     // This would be replaced with actual Google Calendar API integration
     return new Promise(resolve => {
       setTimeout(() => {
-        console.log(`Task ${taskId} synced with Google Calendar`);
         resolve(true);
       }, 1000);
     });

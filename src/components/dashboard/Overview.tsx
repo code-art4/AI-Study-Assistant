@@ -25,16 +25,23 @@ interface IOverview {
   tasks: StudyTask[];
   plans: StudyPlan[];
   toggleTaskCompletion: (task: string) => void;
+  setActiveTab: (tab: string) => void;
 }
 
 const Overview = (props: IOverview) => {
-  const { progress, tasks, plans, toggleTaskCompletion } = props;
-  console.log(plans);
+  const { progress, tasks, plans, toggleTaskCompletion, setActiveTab } = props;
 
   const completionPercentage =
     (tasks?.filter((task) => task.completed).length / tasks?.length) * 100;
 
-  const [activeTab, setActiveTab] = useState('overview');
+  const isSameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate();
+
+const dueToday = tasks?.filter((task) =>
+  isSameDay(new Date(task.dueDate), new Date())
+);
 
   return (
     <TabsContent value='overview' className='space-y-6'>
@@ -49,7 +56,7 @@ const Overview = (props: IOverview) => {
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold mb-2'>
-              {completionPercentage}%
+              {Math.round(completionPercentage * 10) / 10}%
             </div>
             <Progress value={completionPercentage} className='h-2' />
             <p className='text-xs text-muted-foreground mt-2'>
@@ -124,14 +131,15 @@ const Overview = (props: IOverview) => {
       </div>
 
       {/* Today's Tasks */}
+      {tasks?.length > 0 && dueToday?.length > 0 ? (
+        <>
       <h2 className='text-xl font-semibold mt-8 mb-4'>Today's Tasks</h2>
-      {tasks?.length > 0 ? (
         <div className='bg-white dark:bg-gray-800 rounded-xl border border-border shadow-sm p-5'>
           <div className='space-y-4'>
-            {tasks.map((task) => {
-              if (isToday(task.dueDate)) {
+            {dueToday.map((task) => {
+              // if (isToday(task.dueDate)) {
                 return <Task task={task} key={task._id} />;
-              }
+              // }
             })}
           </div>
 
@@ -145,6 +153,7 @@ const Overview = (props: IOverview) => {
             </Button>
           </div>
         </div>
+        </>
       ) : (
         <div className='bg-white dark:bg-gray-800 rounded-xl border border-border shadow-sm p-6 text-center'>
           <p className='text-muted-foreground'>No tasks scheduled for today</p>
@@ -164,7 +173,7 @@ const Overview = (props: IOverview) => {
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {plans?.slice(0, 2).map((plan) => (
           <StudyPlanCard
-            key={plan._id}
+            key={plan.id}
             plan={plan}
             onClick={() => setActiveTab('plans')}
           />

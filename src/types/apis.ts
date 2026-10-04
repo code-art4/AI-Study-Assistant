@@ -2,8 +2,8 @@ import { AxiosResponse } from 'axios';
 
 // Enum to define allowed HTTP methods
 export enum HttpMethod {
-    GET = 'get',
-    POST = 'post',
+    GET = 'GET',
+    POST = 'POST',
     PUT = 'PUT'
 }
 
@@ -11,6 +11,7 @@ export enum HttpMethod {
 export interface QueryOptions {
     url?: string;
     method?: HttpMethod; // Defaults to GET if not specified
+    body?: any; // Optional body for POST and PUT requests
 }
 
 // Interface to define the return object of useQuery hook

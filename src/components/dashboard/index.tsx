@@ -5,9 +5,8 @@ import Plans from './Plans';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Dashboard = (props) => {
-  const { overviewProps, tasks, plans } = props;
+  const { overviewProps, tasks, plans, setOpenNewTaskModal, activeTab, setActiveTab } = props;
 
-  const [activeTab, setActiveTab] = useState('overview');
   return (
     <Tabs
       defaultValue='overview'
@@ -20,8 +19,8 @@ const Dashboard = (props) => {
         <TabsTrigger value='tasks'>Tasks</TabsTrigger>
         <TabsTrigger value='plans'>Study Plans</TabsTrigger>
       </TabsList>
-      <Overview {...overviewProps} />
-      <Tasks tasks={tasks} />
+      <Overview {...overviewProps} setActiveTab={setActiveTab} />
+      <Tasks tasks={tasks} setOpenNewTaskModal={setOpenNewTaskModal} />
       <Plans plans={plans} />
     </Tabs>
   );

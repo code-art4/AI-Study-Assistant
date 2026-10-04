@@ -1,15 +1,16 @@
 import apiCall from '@/utils/apiCall';
 import { formatDate } from '@/utils/dateUtils';
-import React from 'react';
 
 function Task({ task }) {
-  const toggleTaskCompletion = (task) => {
-    apiCall({
-      url: `tasks/task/update/${task._id}`,
-      method: 'PUT',
-      values: { completed: true },
-    });
-  };
+
+  // const toggleTaskCompletion = (task) => {
+  //   apiCall({
+  //     url: `tasks/task/update/${task._id}`,
+  //     method: 'PUT',
+  //     values: { completed: true },
+  //   });
+  // };
+
 
   return (
     <div className='flex items-start border-b border-border last:border-0 pb-4 last:pb-0'>
@@ -17,7 +18,7 @@ function Task({ task }) {
         <input
           type='checkbox'
           checked={task.completed}
-          onChange={() => toggleTaskCompletion(task)}
+          // onChange={() => toggleTaskCompletion(task)}
           className='h-4 w-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500'
         />
       </div>

@@ -1,0 +1,10 @@
+name: frontend-app
+image: codeart4/ai-study-assistant
+imageVersion: v1.0
+port: 80
+
+# Add this section to satisfy the built-in chart templates
+service:
+  type: NodePort
+  port: 80
+  nodePort: 32080 

@@ -2,14 +2,18 @@ import { useState, useEffect, memo } from 'react';
 import Navbar from '@/components/Navbar';
 import DashboardComponent from '@/components/dashboard';
 import { isToday } from '@/utils/dateUtils';
-import { StudyPlan, StudyTask, UserProgress } from '@/types';
+import { HttpMethod, StudyPlan, StudyTask, UserProgress } from '@/types';
 import { mockPlans, mockProgress, mockTasks } from '@/data/mockData';
 import useQuery from '@/hooks/useQuery';
 import axios from 'axios';
 import { Skeleton } from '@/components/ui/skeleton';
+import NewTaskModal from '@/components/ui/modal';
 
 const Dashboard = () => {
   const [progress, setProgress] = useState<UserProgress>(mockProgress);
+  const [openNewTaskModal, setOpenNewTaskModal] = useState(false);
+  const [openNewPlanModal, setOpenNewPlanModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
   // const [tasks, setTasks] = useState<StudyTask[]>(mockTasks);
   // const [plans, setPlans] = useState<StudyPlan[]>(mockPlans);
 
@@ -18,27 +22,31 @@ const Dashboard = () => {
 
   const {
     loading: isTasksLoading,
-    status: tasksStatus,
     error: tasksError,
-    data: returnedTasks,
+    success: returnedTasks,
+    loadFn: fetchTasks,
   } = useQuery({
     url: 'tasks/',
-    method: 'get',
+    method: HttpMethod.GET,
   });
 
   const {
     loading: isPlansLoading,
-    status: planStatus,
-    error: planError,
-    data: returnedPlans,
+    success: returnedPlans,
+    error: plansError,
+    loadFn: fetchPlans,
   } = useQuery({
     url: 'studyPlans/',
-    method: 'get',
+    method: HttpMethod.GET,
   });
+
+  useEffect(() => {
+    fetchPlans();
+    fetchTasks();
+  }, []);
 
   const tasks = returnedTasks?.data;
   const plans = returnedPlans?.data;
-  console.log(returnedPlans, returnedTasks);
   // Toggle task completion
   const toggleTaskCompletion = (taskId: string) => {
     // useQuery({
@@ -57,6 +65,7 @@ const Dashboard = () => {
     progress,
     tasks,
     plans,
+    activeTab,
     toggleTaskCompletion,
   };
 
@@ -66,7 +75,22 @@ const Dashboard = () => {
     overviewProps,
     tasks,
     plans,
+    activeTab,
+    setActiveTab,
+    setOpenNewTaskModal,
+    setOpenNewPlanModal
   };
+
+  const NewTaskModalProps = {
+    open: openNewTaskModal,
+    onOpenChange: setOpenNewTaskModal,
+    subjects:["Chemistry", "Mathematics", "Biology"],
+    onCreate:() => console.log("task"),
+    title:"New task",
+    description:"Add something to study and we'll fit it into your plan.",
+    modalId:"task",
+    buttonName:"Create task"
+  }
 
   return (
     <div className='min-h-screen bg-background'>
@@ -88,6 +112,9 @@ const Dashboard = () => {
           <DashboardComponent {...dashboardComponentProps} />
         )}
       </main>
+       {openNewTaskModal ? <div className="absolute w-screen h-screen bg-[#000000] opacity-20 top-0 left-0 z-[50]">
+        <NewTaskModal {...NewTaskModalProps}  />
+      </div> : null}
     </div>
   );
 };

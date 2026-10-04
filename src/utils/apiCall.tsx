@@ -1,20 +1,33 @@
 // apiCall.ts
 import axios, { AxiosResponse } from 'axios';
+import { useState } from 'react';
 
 interface ApiCallProps {
-  setApiResult?: React.Dispatch<React.SetStateAction<any>>;
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   values?: any;
+  body?: any;
+  result?: {
+    loading: boolean;
+    status: 'success' | 'failed' | 'not loaded';
+    error: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: any;
+  };
 }
 
 const apiCall = async ({
-  setApiResult,
   url,
   method,
   values,
+  body,
+  result
 }: ApiCallProps): Promise<AxiosResponse | void> => {
+
+   const [apiResult, setApiResult] = useState(result);
+
+
   const axiosUrl =
     import.meta.env.VITE_MODE === 'development'
       ? import.meta.env.VITE_API_URL
@@ -26,7 +39,7 @@ const apiCall = async ({
     setApiResult((prev) => ({
       ...prev,
       loading: true,
-      status: '',
+      status: 'not loaded',
       error: '',
     }));
   }

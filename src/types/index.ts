@@ -25,11 +25,11 @@ export interface StudyPlan {
   id: string;
   title: string;
   description: string;
-  goal: string;
+  studyGoal: string;
   startDate: Date;
   endDate: Date;
   subject: string;
-  session: StudySession[];
+  sessions: StudySession[];
 }
 
 export interface Document {
@@ -76,4 +76,10 @@ export interface User {
   documents: Document[];
   quizzes: Quiz[];
   progress: UserProgress;
+}
+
+// Enum to define allowed HTTP methods
+export enum HttpMethod {
+  GET = 'get',
+  POST = 'post',
 }

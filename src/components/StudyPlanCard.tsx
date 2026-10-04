@@ -14,7 +14,6 @@ const StudyPlanCard = ({ plan, onClick, className }: StudyPlanCardProps) => {
   const daysUntil = getDaysUntil(plan.endDate);
   const isUrgent = daysUntil <= 3;
   const totalSessions = plan.session?.length;
-  console.log(totalSessions);
   const completedSessions = plan.session?.filter(
     (session) => session.completed
   )?.length;

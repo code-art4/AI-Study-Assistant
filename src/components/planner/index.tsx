@@ -13,6 +13,7 @@ const Planner = (props) => {
     handleCalendarSync,
     setFormData,
     formData,
+    currentPlan,
     plans,
     setActiveTab,
     activeTab,
@@ -31,8 +32,8 @@ const Planner = (props) => {
       endDate: new Date(new Date().setDate(new Date().getDate() + 14))
         .toISOString()
         .split('T')[0],
-      goal: `Complete ${templateTitle} successfully`,
-      topics: '',
+      studyGoal: `Complete ${templateTitle} successfully`,
+      category: '',
     });
 
     setActiveTab('create');
@@ -152,32 +153,32 @@ const Planner = (props) => {
                         </div>
 
                         <div className='space-y-2'>
-                          <label htmlFor='goal' className='text-sm font-medium'>
+                          <label htmlFor='studyGoal' className='text-sm font-medium'>
                             Study Goal
                           </label>
                           <textarea
-                            id='goal'
+                            id='studyGoal'
                             className='w-full p-2 border border-border rounded-md'
                             rows={3}
                             placeholder='e.g. Prepare for midterm exam with focus on chapters 1-5'
-                            value={formData.goal}
+                            value={formData.studyGoal}
                             onChange={handleInputChange}
                           />
                         </div>
 
                         <div className='space-y-2'>
                           <label
-                            htmlFor='topics'
+                            htmlFor='category'
                             className='text-sm font-medium'
                           >
                             Key Topics (separated by commas)
                           </label>
                           <textarea
-                            id='topics'
+                            id='category'
                             className='w-full p-2 border border-border rounded-md'
                             rows={3}
                             placeholder='e.g. Variables, Functions, Data Structures, Algorithms'
-                            value={formData.topics}
+                            value={formData.category}
                             onChange={handleInputChange}
                           />
                         </div>
@@ -374,7 +375,9 @@ const Planner = (props) => {
           </Tabs>
         ) : (
           <div className='space-y-4'>
-            <Button variant='outline' onClick={() => setShowPlanDetails(false)}>
+            <Button variant='outline' 
+            // onClick={() => setShowPlanDetails(false)}
+            >
               Back to All Plans
             </Button>
 
