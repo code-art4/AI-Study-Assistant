@@ -28,6 +28,8 @@ interface IOverview {
   setActiveTab: (tab: string) => void;
 }
 
+// export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+
 const Overview = (props: IOverview) => {
   const { progress, tasks, plans, toggleTaskCompletion, setActiveTab } = props;
 
