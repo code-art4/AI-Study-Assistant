@@ -1,52 +1,64 @@
-
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { CalendarIcon, X } from 'lucide-react';
-import { StudyTask } from '@/types';
-import { cn } from '@/lib/utils';
-import { toast } from '@/components/ui/use-toast';
-import { syncTaskWithGoogleCalendar } from '@/utils/googleCalendarSync';
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CalendarIcon, X } from "lucide-react";
+import { StudyTask } from "@/types";
+import { cn } from "@/lib/utils";
+import { toast } from "@/components/ui/use-toast";
+import { syncTaskWithGoogleCalendar } from "@/utils/googleCalendarSync";
 
 interface TaskFormProps {
-  onSubmit: (task: Omit<StudyTask, 'id'>) => void;
+  onSubmit: (task: Omit<StudyTask, "id">) => void;
   onCancel: () => void;
   initialValues?: StudyTask;
   isEditing?: boolean;
 }
 
-const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: TaskFormProps) => {
-  const [title, setTitle] = useState(initialValues?.title || '');
-  const [description, setDescription] = useState(initialValues?.description || '');
-  const [subject, setSubject] = useState(initialValues?.subject || '');
-  const [priority, setPriority] = useState<'high' | 'medium' | 'low'>(initialValues?.priority || 'medium');
-  const [dueDate, setDueDate] = useState<Date | undefined>(initialValues?.dueDate || undefined);
-  const [estimatedTime, setEstimatedTime] = useState(initialValues?.estimatedTime?.toString() || '60');
+const TaskForm = ({
+  onSubmit,
+  onCancel,
+  initialValues,
+  isEditing = false,
+}: TaskFormProps) => {
+  const [title, setTitle] = useState(initialValues?.title || "");
+  const [description, setDescription] = useState(
+    initialValues?.description || "",
+  );
+  const [subject, setSubject] = useState(initialValues?.subject || "");
+  const [priority, setPriority] = useState<"high" | "medium" | "low">(
+    initialValues?.priority || "medium",
+  );
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    initialValues?.dueDate || undefined,
+  );
+  const [estimatedTime, setEstimatedTime] = useState(
+    initialValues?.estimatedTime?.toString() || "60",
+  );
   const [tags, setTags] = useState<string[]>(initialValues?.tags || []);
-  const [tagInput, setTagInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
   const [syncToCalendar, setSyncToCalendar] = useState(false);
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title || !subject || !dueDate) {
       toast({
         title: "Missing fields",
         description: "Please fill in all required fields.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-    
-    const task: Omit<StudyTask, 'id'> = {
+
+    const task: Omit<StudyTask, "id"> = {
       title,
       description,
       subject,
@@ -54,47 +66,47 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
       completed: initialValues?.completed || false,
       dueDate,
       estimatedTime: parseInt(estimatedTime) || 60,
-      tags
+      tags,
     };
-    
+
     onSubmit(task);
-    
+
     if (syncToCalendar && dueDate) {
       // If user has requested to sync with calendar
       if (isEditing && initialValues) {
         // For editing, we use the existing ID for sync
         await syncTaskWithGoogleCalendar({
           ...task,
-          id: initialValues.id
+          id: initialValues.id,
         });
       } else {
         // For new tasks, we'll sync in the onSubmit handler after ID is assigned
         toast({
           title: "Calendar Sync Scheduled",
-          description: "Your task will be synced to your calendar."
+          description: "Your task will be synced to your calendar.",
         });
       }
     }
   };
-  
+
   const handleAddTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
       setTags([...tags, tagInput.trim()]);
-      setTagInput('');
+      setTagInput("");
     }
   };
-  
+
   const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
-  
+
   const handleTagKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleAddTag();
     }
   };
-  
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -109,7 +121,7 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
           required
         />
       </div>
-      
+
       <div className="space-y-2">
         <label htmlFor="description" className="text-sm font-medium">
           Description
@@ -122,7 +134,7 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
           rows={3}
         />
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <label htmlFor="subject" className="text-sm font-medium">
@@ -136,7 +148,7 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
             required
           />
         </div>
-        
+
         <div className="space-y-2">
           <label htmlFor="priority" className="text-sm font-medium">
             Priority
@@ -144,7 +156,9 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
           <select
             id="priority"
             value={priority}
-            onChange={(e) => setPriority(e.target.value as 'high' | 'medium' | 'low')}
+            onChange={(e) =>
+              setPriority(e.target.value as "high" | "medium" | "low")
+            }
             className="w-full p-2 border border-border rounded-md"
           >
             <option value="high">High</option>
@@ -153,19 +167,17 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
           </select>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Due Date *
-          </label>
+          <label className="text-sm font-medium">Due Date *</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
                 className={cn(
                   "w-full justify-start text-left font-normal",
-                  !dueDate && "text-muted-foreground"
+                  !dueDate && "text-muted-foreground",
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -183,7 +195,7 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
             </PopoverContent>
           </Popover>
         </div>
-        
+
         <div className="space-y-2">
           <label htmlFor="estimated-time" className="text-sm font-medium">
             Estimated Time (minutes)
@@ -198,11 +210,9 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
           />
         </div>
       </div>
-      
+
       <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Tags
-        </label>
+        <label className="text-sm font-medium">Tags</label>
         <div className="flex items-center space-x-2">
           <Input
             value={tagInput}
@@ -234,7 +244,7 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
           </div>
         )}
       </div>
-      
+
       <div className="flex items-center space-x-2">
         <input
           type="checkbox"
@@ -247,13 +257,13 @@ const TaskForm = ({ onSubmit, onCancel, initialValues, isEditing = false }: Task
           Sync to Google Calendar
         </label>
       </div>
-      
+
       <div className="flex justify-end space-x-2 pt-2">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
         <Button type="submit" className="bg-brand-500 hover:bg-brand-600">
-          {isEditing ? 'Update' : 'Create'} Task
+          {isEditing ? "Update" : "Create"} Task
         </Button>
       </div>
     </form>

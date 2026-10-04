@@ -1,25 +1,73 @@
-import { useState, useEffect } from 'react';
-import apiCall from '../utils/apiCall';
-import { HttpMethod, QueryResult, QueryOptions } from '../types/apis';
+import { HttpMethod } from "@/types";
+import axios, { AxiosResponse } from "axios";
+import { useEffect, useState } from "react";
 
-const useQuery = (queryProps) => {
-  const { url, method = HttpMethod.POST }: QueryOptions = queryProps;
+// Interface to define the options object for useQuery hook
+interface QueryOptions {
+  url: string;
+  method?: HttpMethod; // Defaults to GET if not specified
+  successFn?: (res: AxiosResponse) => void;
+  errorFn?: (err: Error) => void;
+}
+
+// Interface to define the return object of useQuery hook
+interface QueryResult {
+  error?: string;
+  success?: any;
+  loading: boolean;
+  loadFn: (values?: any) => Promise<any>;
+}
+
+const useQuery = ({
+  url,
+  method = HttpMethod.POST,
+  successFn,
+  errorFn,
+}: QueryOptions): QueryResult => {
+  const axiosUrl = import.meta.env.VITE_API_URL;
+
+  axios.defaults.baseURL = axiosUrl;
 
   // State variables for loading, success and error
-  const [apiResult, setApiResult] = useState({
-    loading: false,
-    status: null,
-    error: '',
-    data: null,
-  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState<any>(null);
+  const [error, setError] = useState<string>();
 
   // Function to load the data using axios and update the state variables
-  useEffect(() => {
-    apiCall({ setApiResult, apiResult, url, method });
-  }, []);
+  const loadFn = async (values?: any): Promise<any> => {
+    setLoading(true);
+    setError(undefined);
+    try {
+      // Make an axios request with the provided options
+      const response = await axios.request({
+        url,
+        method,
+        data: values, // Use the provided values or the default data
+      });
+      setLoading(false);
+      setSuccess(response.data);
+      successFn?.(response);
+      return response.data;
+    } catch (err: any) {
+      setLoading(false);
+      errorFn?.(err);
+      // Set error state with response error message, or generic error message if not available
+      if (err?.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError(err.message);
+      }
+      return undefined;
+    }
+  };
 
   // Return the state variables and the load function
-  return { ...apiResult, apiCall };
+  return {
+    error,
+    success,
+    loading,
+    loadFn,
+  };
 };
 
 export default useQuery;

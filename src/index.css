@@ -1,5 +1,4 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -94,7 +93,9 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "pnum" on, "lnum" on;
+    font-feature-settings:
+      "pnum" on,
+      "lnum" on;
   }
 
   /* Custom scrollbar */
@@ -125,7 +126,7 @@
   .glass-card {
     @apply bg-white/80 dark:bg-black/20 backdrop-blur-lg border border-white/10 dark:border-white/5;
   }
-  
+
   .glass-panel {
     @apply bg-white/70 dark:bg-black/30 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-sm;
   }
@@ -141,7 +142,7 @@
   .nav-item {
     @apply px-4 py-2 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-accent;
   }
-  
+
   .nav-item-active {
     @apply px-4 py-2 text-sm font-medium text-foreground rounded-md bg-accent;
   }
@@ -156,7 +157,9 @@
 .page-transition-enter-active {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 300ms, transform 300ms;
+  transition:
+    opacity 300ms,
+    transform 300ms;
 }
 
 .page-transition-exit {
@@ -167,5 +170,7 @@
 .page-transition-exit-active {
   opacity: 0;
   transform: translateY(-5px);
-  transition: opacity 200ms, transform 200ms;
+  transition:
+    opacity 200ms,
+    transform 200ms;
 }

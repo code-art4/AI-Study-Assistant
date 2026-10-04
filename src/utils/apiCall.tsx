@@ -1,59 +1,34 @@
-// apiCall.ts
-import axios, { AxiosResponse } from 'axios';
+import axios, { isAxiosError } from "axios";
 
 interface ApiCallProps {
-  setApiResult?: React.Dispatch<React.SetStateAction<any>>;
   url: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  values?: any;
+  method: "GET" | "POST" | "PUT" | "DELETE";
+  values?: unknown;
+  body?: unknown; // currently unused, kept so existing callers still compile
 }
 
-const apiCall = async ({
-  setApiResult,
+const apiCall = async <T = unknown,>({
   url,
   method,
   values,
-}: ApiCallProps): Promise<AxiosResponse | void> => {
-  const axiosUrl =
-    import.meta.env.VITE_MODE === 'development'
-      ? import.meta.env.VITE_API_URL
-      : '';
-
-  axios.defaults.baseURL = axiosUrl;
-
-  if (setApiResult) {
-    setApiResult((prev) => ({
-      ...prev,
-      loading: true,
-      status: '',
-      error: '',
-    }));
-  }
+}: ApiCallProps): Promise<T> => {
+  axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
   try {
-    const response = await axios.request({
+    const response = await axios.request<T>({
       url,
       method,
       data: values,
     });
-
-    setApiResult((prev) => ({
-      ...prev,
-      loading: false,
-      status: 'success',
-      data: response.data,
-    }));
-
     return response.data;
-  } catch (err: any) {
-    setApiResult((prev) => ({
-      ...prev,
-      loading: false,
-      status: 'failed',
-      error:
-        err?.message || err?.response?.data?.message || 'Something went wrong',
-    }));
+  } catch (err: unknown) {
+    let message = "Something went wrong";
+    if (isAxiosError(err)) {
+      message = err.response?.data?.message || err.message || message;
+    } else if (err instanceof Error) {
+      message = err.message;
+    }
+    throw new Error(message);
   }
 };
 
