@@ -1,7 +1,17 @@
-
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import { BookOpen, Brain, Clock, HelpCircle, Check, X, BarChart2, Upload, AlertTriangle, Award } from "lucide-react";
+import {
+  BookOpen,
+  Brain,
+  Clock,
+  HelpCircle,
+  Check,
+  X,
+  BarChart2,
+  Upload,
+  AlertTriangle,
+  Award,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -43,36 +53,75 @@ const Quiz = () => {
   const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
   const [startTime, setStartTime] = useState<number>(0);
   const [file, setFile] = useState<File | null>(null);
-  
+
   // Quiz generation parameters
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedTopic, setSelectedTopic] = useState<string>("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("intermediate");
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useState<string>("intermediate");
   const [questionCount, setQuestionCount] = useState<number>(5);
   const [currentQuiz, setCurrentQuiz] = useState<Quiz | null>(null);
-  
+
   // Expanded subject list
   const subjects = [
-    "Computer Science", "Mathematics", "Physics", "Biology", "Chemistry", 
-    "History", "Literature", "Geography", "Economics", "Psychology",
-    "Sociology", "Political Science", "Philosophy", "Art History", 
-    "Business", "Engineering", "Medicine", "Law", "Languages", "Music Theory",
-    "Environmental Science", "Anthropology", "Astronomy", "Statistics",
-    "Linguistics", "Architecture", "Accounting", "Media Studies", "Education",
-    "Sports Science", "Nutrition", "Neuroscience", "Geology", "Theater Studies",
-    "Film Studies", "Religious Studies", "Ethics", "Genetics", "Microbiology",
-    "Ecology", "Marketing", "Finance", "International Relations"
+    "Computer Science",
+    "Mathematics",
+    "Physics",
+    "Biology",
+    "Chemistry",
+    "History",
+    "Literature",
+    "Geography",
+    "Economics",
+    "Psychology",
+    "Sociology",
+    "Political Science",
+    "Philosophy",
+    "Art History",
+    "Business",
+    "Engineering",
+    "Medicine",
+    "Law",
+    "Languages",
+    "Music Theory",
+    "Environmental Science",
+    "Anthropology",
+    "Astronomy",
+    "Statistics",
+    "Linguistics",
+    "Architecture",
+    "Accounting",
+    "Media Studies",
+    "Education",
+    "Sports Science",
+    "Nutrition",
+    "Neuroscience",
+    "Geology",
+    "Theater Studies",
+    "Film Studies",
+    "Religious Studies",
+    "Ethics",
+    "Genetics",
+    "Microbiology",
+    "Ecology",
+    "Marketing",
+    "Finance",
+    "International Relations",
   ];
 
   // Quiz generation function
   const generateQuiz = (mode: QuizMode) => {
     let title = "";
     const questions: Question[] = [];
-    
+
     // Generate topic-specific quiz based on selected parameters
     if (mode === "topic") {
-      title = selectedTopic || (selectedSubject ? `Introduction to ${selectedSubject}` : "General Knowledge Quiz");
-      
+      title =
+        selectedTopic ||
+        (selectedSubject
+          ? `Introduction to ${selectedSubject}`
+          : "General Knowledge Quiz");
+
       // Generate appropriate topics based on subject selection
       const topics: Record<string, Question[]> = {
         "Computer Science": [
@@ -82,32 +131,37 @@ const Quiz = () => {
               "To cluster similar data points without labels",
               "To predict outcomes based on labeled training data",
               "To reduce the dimensionality of the data",
-              "To generate new data samples similar to the training data"
+              "To generate new data samples similar to the training data",
             ],
             correctAnswer: 1,
-            explanation: "Supervised learning uses labeled training data to learn a function that can be used to predict outcomes for unseen data."
+            explanation:
+              "Supervised learning uses labeled training data to learn a function that can be used to predict outcomes for unseen data.",
           },
           {
-            question: "Which of the following is NOT a type of machine learning?",
+            question:
+              "Which of the following is NOT a type of machine learning?",
             options: [
               "Supervised learning",
               "Unsupervised learning",
               "Deterministic learning",
-              "Reinforcement learning"
+              "Reinforcement learning",
             ],
             correctAnswer: 2,
-            explanation: "Deterministic learning is not a recognized type of machine learning. The main types are supervised, unsupervised, reinforcement, and semi-supervised learning."
+            explanation:
+              "Deterministic learning is not a recognized type of machine learning. The main types are supervised, unsupervised, reinforcement, and semi-supervised learning.",
           },
           {
-            question: "What is a common evaluation metric for classification problems?",
+            question:
+              "What is a common evaluation metric for classification problems?",
             options: [
               "Mean Squared Error (MSE)",
               "Root Mean Squared Error (RMSE)",
               "Accuracy",
-              "R-squared"
+              "R-squared",
             ],
             correctAnswer: 2,
-            explanation: "Accuracy, which measures the proportion of correctly classified instances, is a common evaluation metric for classification problems."
+            explanation:
+              "Accuracy, which measures the proportion of correctly classified instances, is a common evaluation metric for classification problems.",
           },
           {
             question: "Which algorithm is NOT used for clustering?",
@@ -115,45 +169,40 @@ const Quiz = () => {
               "K-means",
               "DBSCAN",
               "Hierarchical clustering",
-              "Logistic Regression"
+              "Logistic Regression",
             ],
             correctAnswer: 3,
-            explanation: "Logistic Regression is a supervised learning algorithm used for classification, not clustering."
+            explanation:
+              "Logistic Regression is a supervised learning algorithm used for classification, not clustering.",
           },
           {
-            question: "What is the purpose of regularization in machine learning?",
+            question:
+              "What is the purpose of regularization in machine learning?",
             options: [
               "To increase model complexity",
               "To reduce overfitting",
               "To increase training speed",
-              "To improve data preprocessing"
+              "To improve data preprocessing",
             ],
             correctAnswer: 1,
-            explanation: "Regularization techniques are used to prevent overfitting by adding a penalty term to the loss function, discouraging complex models."
-          }
+            explanation:
+              "Regularization techniques are used to prevent overfitting by adding a penalty term to the loss function, discouraging complex models.",
+          },
         ],
-        "Mathematics": [
+        Mathematics: [
           {
             question: "What is the derivative of f(x) = x²?",
-            options: [
-              "f'(x) = 2x",
-              "f'(x) = x",
-              "f'(x) = 2",
-              "f'(x) = x²"
-            ],
+            options: ["f'(x) = 2x", "f'(x) = x", "f'(x) = 2", "f'(x) = x²"],
             correctAnswer: 0,
-            explanation: "The derivative of x² is 2x, which can be derived using the power rule: d/dx(x^n) = n*x^(n-1)."
+            explanation:
+              "The derivative of x² is 2x, which can be derived using the power rule: d/dx(x^n) = n*x^(n-1).",
           },
           {
             question: "What is the value of sin(π/2)?",
-            options: [
-              "0",
-              "1/2",
-              "1",
-              "√2/2"
-            ],
+            options: ["0", "1/2", "1", "√2/2"],
             correctAnswer: 2,
-            explanation: "sin(π/2) = 1. This is a fundamental value in trigonometry."
+            explanation:
+              "sin(π/2) = 1. This is a fundamental value in trigonometry.",
           },
           {
             question: "What is the integral of f(x) = 2x?",
@@ -161,21 +210,18 @@ const Quiz = () => {
               "F(x) = x² + C",
               "F(x) = 2x² + C",
               "F(x) = x² + 2 + C",
-              "F(x) = x² - 2x + C"
+              "F(x) = x² - 2x + C",
             ],
             correctAnswer: 0,
-            explanation: "The integral of 2x is x². We can verify this by differentiating x² to get 2x."
+            explanation:
+              "The integral of 2x is x². We can verify this by differentiating x² to get 2x.",
           },
           {
             question: "Which of the following is not a prime number?",
-            options: [
-              "17",
-              "19",
-              "21",
-              "23"
-            ],
+            options: ["17", "19", "21", "23"],
             correctAnswer: 2,
-            explanation: "21 is not a prime number because it can be factored as 3 × 7."
+            explanation:
+              "21 is not a prime number because it can be factored as 3 × 7.",
           },
           {
             question: "What is the quadratic formula?",
@@ -183,34 +229,32 @@ const Quiz = () => {
               "x = (-b ± √(b² - 4ac))/2a",
               "x = (-b ± √(b² + 4ac))/2a",
               "x = (b ± √(b² - 4ac))/2a",
-              "x = b/(2a) ± √(b² - 4ac)"
+              "x = b/(2a) ± √(b² - 4ac)",
             ],
             correctAnswer: 0,
-            explanation: "The quadratic formula for solving ax² + bx + c = 0 is x = (-b ± √(b² - 4ac))/2a."
-          }
+            explanation:
+              "The quadratic formula for solving ax² + bx + c = 0 is x = (-b ± √(b² - 4ac))/2a.",
+          },
         ],
-        "Physics": [
+        Physics: [
           {
             question: "What is Newton's Second Law of Motion?",
             options: [
               "For every action, there is an equal and opposite reaction",
               "Force equals mass times acceleration (F = ma)",
               "An object at rest stays at rest unless acted upon by a force",
-              "Energy cannot be created or destroyed, only transformed"
+              "Energy cannot be created or destroyed, only transformed",
             ],
             correctAnswer: 1,
-            explanation: "Newton's Second Law states that force equals mass times acceleration (F = ma)."
+            explanation:
+              "Newton's Second Law states that force equals mass times acceleration (F = ma).",
           },
           {
             question: "Which of the following is a unit of energy?",
-            options: [
-              "Newton",
-              "Ampere",
-              "Joule",
-              "Tesla"
-            ],
+            options: ["Newton", "Ampere", "Joule", "Tesla"],
             correctAnswer: 2,
-            explanation: "The joule (J) is the SI unit of energy, work, and heat."
+            explanation:
+              "The joule (J) is the SI unit of energy, work, and heat.",
           },
           {
             question: "What is the speed of light in vacuum?",
@@ -218,21 +262,24 @@ const Quiz = () => {
               "3 × 10⁸ m/s",
               "3 × 10⁶ m/s",
               "3 × 10⁴ m/s",
-              "3 × 10² m/s"
+              "3 × 10² m/s",
             ],
             correctAnswer: 0,
-            explanation: "The speed of light in vacuum is approximately 3 × 10⁸ m/s (299,792,458 m/s exactly)."
+            explanation:
+              "The speed of light in vacuum is approximately 3 × 10⁸ m/s (299,792,458 m/s exactly).",
           },
           {
-            question: "Which fundamental force is responsible for holding the nucleus of an atom together?",
+            question:
+              "Which fundamental force is responsible for holding the nucleus of an atom together?",
             options: [
               "Gravitational force",
               "Electromagnetic force",
               "Weak nuclear force",
-              "Strong nuclear force"
+              "Strong nuclear force",
             ],
             correctAnswer: 3,
-            explanation: "The strong nuclear force holds the nucleus together, overcoming the electromagnetic repulsion between protons."
+            explanation:
+              "The strong nuclear force holds the nucleus together, overcoming the electromagnetic repulsion between protons.",
           },
           {
             question: "What is the principle of conservation of energy?",
@@ -240,39 +287,48 @@ const Quiz = () => {
               "Energy can be created but not destroyed",
               "Energy can be destroyed but not created",
               "Energy cannot be created or destroyed, only transformed",
-              "Energy is always increasing in a closed system"
+              "Energy is always increasing in a closed system",
             ],
             correctAnswer: 2,
-            explanation: "The principle of conservation of energy states that energy cannot be created or destroyed, only transformed from one form to another."
-          }
-        ]
+            explanation:
+              "The principle of conservation of energy states that energy cannot be created or destroyed, only transformed from one form to another.",
+          },
+        ],
       };
-      
+
       // Default questions if subject not found
       const defaultQuestions: Question[] = [
         {
           question: "What is the capital of France?",
           options: ["London", "Paris", "Berlin", "Madrid"],
           correctAnswer: 1,
-          explanation: "Paris is the capital city of France."
+          explanation: "Paris is the capital city of France.",
         },
         {
           question: "Who wrote 'Romeo and Juliet'?",
-          options: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+          options: [
+            "Charles Dickens",
+            "William Shakespeare",
+            "Jane Austen",
+            "Mark Twain",
+          ],
           correctAnswer: 1,
-          explanation: "William Shakespeare wrote 'Romeo and Juliet' in the late 16th century."
+          explanation:
+            "William Shakespeare wrote 'Romeo and Juliet' in the late 16th century.",
         },
         {
           question: "What is the chemical symbol for water?",
           options: ["H2O", "CO2", "O2", "NaCl"],
           correctAnswer: 0,
-          explanation: "H2O is the chemical formula for water, consisting of two hydrogen atoms and one oxygen atom."
+          explanation:
+            "H2O is the chemical formula for water, consisting of two hydrogen atoms and one oxygen atom.",
         },
         {
           question: "In which year did World War II end?",
           options: ["1943", "1945", "1947", "1950"],
           correctAnswer: 1,
-          explanation: "World War II ended in 1945 with the surrender of Germany in May and Japan in September."
+          explanation:
+            "World War II ended in 1945 with the surrender of Germany in May and Japan in September.",
         },
         {
           question: "What is photosynthesis?",
@@ -280,28 +336,29 @@ const Quiz = () => {
             "The process by which plants make food using light energy",
             "The process of cell division",
             "The decomposition of organic matter",
-            "The process of animal respiration"
+            "The process of animal respiration",
           ],
           correctAnswer: 0,
-          explanation: "Photosynthesis is the process by which green plants use sunlight to synthesize foods from carbon dioxide and water."
-        }
+          explanation:
+            "Photosynthesis is the process by which green plants use sunlight to synthesize foods from carbon dioxide and water.",
+        },
       ];
-      
+
       // Get questions based on subject or use default
       const availableQuestions = topics[selectedSubject] || defaultQuestions;
-      
+
       // Select the requested number of questions
       const selectedQuestions = availableQuestions.slice(0, questionCount);
-      
+
       // If we don't have enough questions, repeat some to reach the requested count
       while (selectedQuestions.length < questionCount) {
         const index = selectedQuestions.length % availableQuestions.length;
-        selectedQuestions.push({...availableQuestions[index]});
+        selectedQuestions.push({ ...availableQuestions[index] });
       }
-      
+
       return {
         title,
-        questions: selectedQuestions
+        questions: selectedQuestions,
       };
     } else if (mode === "document") {
       // Document-based quiz
@@ -314,10 +371,10 @@ const Quiz = () => {
             `Document option 1 for question ${i + 1}`,
             `Document option 2 for question ${i + 1}`,
             `Document option 3 for question ${i + 1}`,
-            `Document option 4 for question ${i + 1}`
+            `Document option 4 for question ${i + 1}`,
           ],
           correctAnswer: Math.floor(Math.random() * 4),
-          explanation: `This is an explanation for question ${i + 1} about the document.`
+          explanation: `This is an explanation for question ${i + 1} about the document.`,
         });
       }
     } else {
@@ -331,25 +388,25 @@ const Quiz = () => {
             `Custom option 1 for question ${i + 1}`,
             `Custom option 2 for question ${i + 1}`,
             `Custom option 3 for question ${i + 1}`,
-            `Custom option 4 for question ${i + 1}`
+            `Custom option 4 for question ${i + 1}`,
           ],
           correctAnswer: Math.floor(Math.random() * 4),
-          explanation: `This is an explanation for custom question ${i + 1}.`
+          explanation: `This is an explanation for custom question ${i + 1}.`,
         });
       }
     }
-    
+
     return {
       title,
-      questions
+      questions,
     };
   };
-  
+
   const handleStartQuiz = () => {
     // Generate the quiz based on user selections
     const newQuiz = generateQuiz(activeTab);
     setCurrentQuiz(newQuiz);
-    
+
     setQuizStarted(true);
     setCurrentQuestion(0);
     setSelectedAnswer(null);
@@ -358,13 +415,13 @@ const Quiz = () => {
     setQuizComplete(false);
     setQuizResult(null);
     setStartTime(Date.now());
-    
+
     toast({
       title: "Quiz Started",
-      description: "Good luck with your quiz!"
+      description: "Good luck with your quiz!",
     });
   };
-  
+
   const handleSelectAnswer = (index: number) => {
     if (selectedAnswer === null) {
       setSelectedAnswer(index);
@@ -374,10 +431,10 @@ const Quiz = () => {
       setAnswers(newAnswers);
     }
   };
-  
+
   const handleNextQuestion = () => {
     if (currentQuiz && currentQuestion < currentQuiz.questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
+      setCurrentQuestion((prev) => prev + 1);
       setSelectedAnswer(null);
       setShowExplanation(false);
     } else {
@@ -385,18 +442,20 @@ const Quiz = () => {
       calculateQuizResults();
     }
   };
-  
+
   const calculateQuizResults = () => {
     if (!currentQuiz) return;
-    
+
     // End of quiz
     const timeSpent = Math.floor((Date.now() - startTime) / 1000);
     const correctCount = answers.filter(
-      (answer, index) => answer === currentQuiz.questions[index].correctAnswer
+      (answer, index) => answer === currentQuiz.questions[index].correctAnswer,
     ).length;
-    
-    const percentage = Math.round((correctCount / currentQuiz.questions.length) * 100);
-    
+
+    const percentage = Math.round(
+      (correctCount / currentQuiz.questions.length) * 100,
+    );
+
     // Generate improvement suggestions
     const improvements: string[] = [];
     answers.forEach((answer, index) => {
@@ -404,73 +463,86 @@ const Quiz = () => {
         improvements.push(`Review: ${currentQuiz.questions[index].question}`);
       }
     });
-    
+
     if (improvements.length === 0) {
-      improvements.push("Great job! Try more challenging quizzes to further improve.");
+      improvements.push(
+        "Great job! Try more challenging quizzes to further improve.",
+      );
     }
-    
+
     setQuizResult({
       totalQuestions: currentQuiz.questions.length,
       correctAnswers: correctCount,
       percentage,
       timeSpent,
-      improvements
+      improvements,
     });
-    
+
     setQuizComplete(true);
     setQuizStarted(false);
-    
+
     // Save result to localStorage
-    saveQuizResult(percentage, correctCount, currentQuiz.questions.length, currentQuiz.title);
+    saveQuizResult(
+      percentage,
+      correctCount,
+      currentQuiz.questions.length,
+      currentQuiz.title,
+    );
   };
-  
-  const saveQuizResult = (percentage: number, correct: number, total: number, topic: string) => {
+
+  const saveQuizResult = (
+    percentage: number,
+    correct: number,
+    total: number,
+    topic: string,
+  ) => {
     try {
-      const results = JSON.parse(localStorage.getItem('quizResults') || '[]');
+      const results = JSON.parse(localStorage.getItem("quizResults") || "[]");
       results.push({
         date: new Date().toISOString(),
         topic,
         percentage,
         correctAnswers: correct,
-        totalQuestions: total
+        totalQuestions: total,
       });
-      localStorage.setItem('quizResults', JSON.stringify(results));
+      localStorage.setItem("quizResults", JSON.stringify(results));
     } catch (error) {
       console.error("Error saving quiz result:", error);
     }
   };
-  
+
   const handleViewExplanation = () => {
     setShowExplanation(true);
   };
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
       toast({
         title: "Document Uploaded",
-        description: "Your document has been uploaded successfully."
+        description: "Your document has been uploaded successfully.",
       });
     }
   };
-  
+
   const handleGenerateFromDocument = () => {
     if (!isAuthenticated) {
       toast({
         title: "Authentication Required",
         description: "Please sign in to use this feature.",
-        variant: "destructive"
+        variant: "destructive",
       });
       showLoginDialog();
       return;
     }
-    
+
     if (file) {
       toast({
         title: "Generating Quiz",
-        description: "Creating quiz from your document. This may take a moment..."
+        description:
+          "Creating quiz from your document. This may take a moment...",
       });
-      
+
       // Simulate processing time
       setTimeout(() => {
         handleStartQuiz();
@@ -479,15 +551,17 @@ const Quiz = () => {
       toast({
         title: "No Document Selected",
         description: "Please upload a document first",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
-  
+
   // Get current question
   const currentQuizQuestion = currentQuiz?.questions[currentQuestion];
-  const progress = currentQuiz ? ((currentQuestion + 1) / currentQuiz.questions.length) * 100 : 0;
-  
+  const progress = currentQuiz
+    ? ((currentQuestion + 1) / currentQuiz.questions.length) * 100
+    : 0;
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -496,18 +570,24 @@ const Quiz = () => {
           <header className="mb-8">
             <h1 className="text-3xl font-bold mb-2">AI Quiz Generator</h1>
             <p className="text-muted-foreground">
-              Test your knowledge with AI-generated quizzes based on your study materials
+              Test your knowledge with AI-generated quizzes based on your study
+              materials
             </p>
           </header>
-          
+
           {!quizStarted && !quizComplete ? (
-            <Tabs defaultValue="topic" value={activeTab} onValueChange={(value) => setActiveTab(value as QuizMode)} className="space-y-6">
+            <Tabs
+              defaultValue="topic"
+              value={activeTab}
+              onValueChange={(value) => setActiveTab(value as QuizMode)}
+              className="space-y-6"
+            >
               <TabsList className="grid grid-cols-3 w-[400px]">
                 <TabsTrigger value="topic">By Topic</TabsTrigger>
                 <TabsTrigger value="document">From Document</TabsTrigger>
                 <TabsTrigger value="custom">Custom</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="topic" className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2">
@@ -518,14 +598,19 @@ const Quiz = () => {
                       <CardContent>
                         <form className="space-y-4">
                           <div className="space-y-2">
-                            <label htmlFor="subject" className="text-sm font-medium">
+                            <label
+                              htmlFor="subject"
+                              className="text-sm font-medium"
+                            >
                               Subject
                             </label>
                             <select
                               id="subject"
                               className="w-full p-2 border border-border rounded-md"
                               value={selectedSubject}
-                              onChange={(e) => setSelectedSubject(e.target.value)}
+                              onChange={(e) =>
+                                setSelectedSubject(e.target.value)
+                              }
                             >
                               <option value="">Select a subject...</option>
                               {subjects.map((subject, index) => (
@@ -535,9 +620,12 @@ const Quiz = () => {
                               ))}
                             </select>
                           </div>
-                          
+
                           <div className="space-y-2">
-                            <label htmlFor="topic" className="text-sm font-medium">
+                            <label
+                              htmlFor="topic"
+                              className="text-sm font-medium"
+                            >
                               Specific Topic
                             </label>
                             <input
@@ -549,33 +637,45 @@ const Quiz = () => {
                               onChange={(e) => setSelectedTopic(e.target.value)}
                             />
                           </div>
-                          
+
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <label htmlFor="difficulty" className="text-sm font-medium">
+                              <label
+                                htmlFor="difficulty"
+                                className="text-sm font-medium"
+                              >
                                 Difficulty Level
                               </label>
                               <select
                                 id="difficulty"
                                 className="w-full p-2 border border-border rounded-md"
                                 value={selectedDifficulty}
-                                onChange={(e) => setSelectedDifficulty(e.target.value)}
+                                onChange={(e) =>
+                                  setSelectedDifficulty(e.target.value)
+                                }
                               >
                                 <option value="beginner">Beginner</option>
-                                <option value="intermediate">Intermediate</option>
+                                <option value="intermediate">
+                                  Intermediate
+                                </option>
                                 <option value="advanced">Advanced</option>
                               </select>
                             </div>
-                            
+
                             <div className="space-y-2">
-                              <label htmlFor="question-count" className="text-sm font-medium">
+                              <label
+                                htmlFor="question-count"
+                                className="text-sm font-medium"
+                              >
                                 Number of Questions
                               </label>
                               <select
                                 id="question-count"
                                 className="w-full p-2 border border-border rounded-md"
                                 value={questionCount}
-                                onChange={(e) => setQuestionCount(parseInt(e.target.value))}
+                                onChange={(e) =>
+                                  setQuestionCount(parseInt(e.target.value))
+                                }
                               >
                                 <option value="5">5 questions</option>
                                 <option value="10">10 questions</option>
@@ -584,9 +684,12 @@ const Quiz = () => {
                               </select>
                             </div>
                           </div>
-                          
+
                           <div className="pt-4">
-                            <Button className="w-full bg-brand-500 hover:bg-brand-600" onClick={handleStartQuiz}>
+                            <Button
+                              className="w-full bg-brand-500 hover:bg-brand-600"
+                              onClick={handleStartQuiz}
+                            >
                               Generate Quiz
                             </Button>
                           </div>
@@ -594,7 +697,7 @@ const Quiz = () => {
                       </CardContent>
                     </Card>
                   </div>
-                  
+
                   <div>
                     <Card>
                       <CardHeader>
@@ -607,21 +710,30 @@ const Quiz = () => {
                             { name: "Organic Chemistry", count: 87 },
                             { name: "World War II", count: 65 },
                             { name: "Calculus", count: 92 },
-                            { name: "Classical Literature", count: 43 }
+                            { name: "Classical Literature", count: 43 },
                           ].map((topic, index) => (
-                            <div 
-                              key={index} 
+                            <div
+                              key={index}
                               className="flex justify-between items-center p-3 bg-muted/40 rounded-md hover:bg-muted/70 cursor-pointer"
                               onClick={() => {
-                                setSelectedSubject(topic.name.includes("Machine Learning") ? "Computer Science" : 
-                                                   topic.name.includes("Organic Chemistry") ? "Chemistry" :
-                                                   topic.name.includes("World War II") ? "History" :
-                                                   topic.name.includes("Calculus") ? "Mathematics" : "Literature");
+                                setSelectedSubject(
+                                  topic.name.includes("Machine Learning")
+                                    ? "Computer Science"
+                                    : topic.name.includes("Organic Chemistry")
+                                      ? "Chemistry"
+                                      : topic.name.includes("World War II")
+                                        ? "History"
+                                        : topic.name.includes("Calculus")
+                                          ? "Mathematics"
+                                          : "Literature",
+                                );
                                 setSelectedTopic(topic.name);
                               }}
                             >
                               <span className="font-medium">{topic.name}</span>
-                              <span className="text-xs text-muted-foreground">{topic.count} quizzes</span>
+                              <span className="text-xs text-muted-foreground">
+                                {topic.count} quizzes
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -630,7 +742,7 @@ const Quiz = () => {
                   </div>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="document" className="space-y-6">
                 <Card>
                   <CardContent className="pt-6">
@@ -639,9 +751,12 @@ const Quiz = () => {
                         <div className="mx-auto bg-brand-50 dark:bg-brand-900/20 w-16 h-16 rounded-full flex items-center justify-center">
                           <Upload className="h-8 w-8 text-brand-500" />
                         </div>
-                        <h3 className="text-xl font-semibold">Generate Quiz from Document</h3>
+                        <h3 className="text-xl font-semibold">
+                          Generate Quiz from Document
+                        </h3>
                         <p className="text-muted-foreground max-w-md mx-auto">
-                          Upload a document to create a quiz based on its content
+                          Upload a document to create a quiz based on its
+                          content
                         </p>
                         <div className="flex justify-center gap-4 pt-4">
                           <label className="cursor-pointer bg-brand-500 hover:bg-brand-600 text-white py-2 px-4 rounded-md">
@@ -663,49 +778,64 @@ const Quiz = () => {
                             <div>
                               <h3 className="font-medium">{file.name}</h3>
                               <p className="text-sm text-muted-foreground">
-                                {(file.size / 1024 / 1024).toFixed(2)} MB • {file.type}
+                                {(file.size / 1024 / 1024).toFixed(2)} MB •{" "}
+                                {file.type}
                               </p>
                             </div>
                           </div>
-                          <Button variant="outline" size="sm" onClick={() => setFile(null)}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setFile(null)}
+                          >
                             Change
                           </Button>
                         </div>
-                        
+
                         <div className="space-y-4">
                           <div className="space-y-2">
-                            <label htmlFor="doc-questions" className="text-sm font-medium">
+                            <label
+                              htmlFor="doc-questions"
+                              className="text-sm font-medium"
+                            >
                               Number of Questions
                             </label>
                             <select
                               id="doc-questions"
                               className="w-full p-2 border border-border rounded-md"
                               value={questionCount}
-                              onChange={(e) => setQuestionCount(parseInt(e.target.value))}
+                              onChange={(e) =>
+                                setQuestionCount(parseInt(e.target.value))
+                              }
                             >
                               <option value="5">5 questions</option>
                               <option value="10">10 questions</option>
                               <option value="15">15 questions</option>
                             </select>
                           </div>
-                          
+
                           <div className="space-y-2">
-                            <label htmlFor="doc-difficulty" className="text-sm font-medium">
+                            <label
+                              htmlFor="doc-difficulty"
+                              className="text-sm font-medium"
+                            >
                               Difficulty Level
                             </label>
                             <select
                               id="doc-difficulty"
                               className="w-full p-2 border border-border rounded-md"
                               value={selectedDifficulty}
-                              onChange={(e) => setSelectedDifficulty(e.target.value)}
+                              onChange={(e) =>
+                                setSelectedDifficulty(e.target.value)
+                              }
                             >
                               <option value="beginner">Beginner</option>
                               <option value="intermediate">Intermediate</option>
                               <option value="advanced">Advanced</option>
                             </select>
                           </div>
-                          
-                          <Button 
+
+                          <Button
                             className="w-full bg-brand-500 hover:bg-brand-600"
                             onClick={handleGenerateFromDocument}
                           >
@@ -717,7 +847,7 @@ const Quiz = () => {
                   </CardContent>
                 </Card>
               </TabsContent>
-              
+
               <TabsContent value="custom" className="space-y-6">
                 <Card>
                   <CardHeader>
@@ -726,7 +856,10 @@ const Quiz = () => {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label htmlFor="quiz-title" className="text-sm font-medium">
+                        <label
+                          htmlFor="quiz-title"
+                          className="text-sm font-medium"
+                        >
                           Quiz Title
                         </label>
                         <input
@@ -736,9 +869,12 @@ const Quiz = () => {
                           placeholder="e.g. Midterm Review Quiz"
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
-                        <label htmlFor="quiz-prompt" className="text-sm font-medium">
+                        <label
+                          htmlFor="quiz-prompt"
+                          className="text-sm font-medium"
+                        >
                           Custom Prompt
                         </label>
                         <textarea
@@ -748,36 +884,49 @@ const Quiz = () => {
                           placeholder="Describe what you want to be quizzed on. Be specific about topics, concepts, or specific knowledge areas."
                         />
                         <p className="text-xs text-muted-foreground">
-                          Example: "Create a quiz about the key machine learning algorithms including supervised and unsupervised learning, focusing on their applications and limitations."
+                          Example: "Create a quiz about the key machine learning
+                          algorithms including supervised and unsupervised
+                          learning, focusing on their applications and
+                          limitations."
                         </p>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label htmlFor="custom-difficulty" className="text-sm font-medium">
+                          <label
+                            htmlFor="custom-difficulty"
+                            className="text-sm font-medium"
+                          >
                             Difficulty Level
                           </label>
                           <select
                             id="custom-difficulty"
                             className="w-full p-2 border border-border rounded-md"
                             value={selectedDifficulty}
-                            onChange={(e) => setSelectedDifficulty(e.target.value)}
+                            onChange={(e) =>
+                              setSelectedDifficulty(e.target.value)
+                            }
                           >
                             <option value="beginner">Beginner</option>
                             <option value="intermediate">Intermediate</option>
                             <option value="advanced">Advanced</option>
                           </select>
                         </div>
-                        
+
                         <div className="space-y-2">
-                          <label htmlFor="custom-question-count" className="text-sm font-medium">
+                          <label
+                            htmlFor="custom-question-count"
+                            className="text-sm font-medium"
+                          >
                             Number of Questions
                           </label>
                           <select
                             id="custom-question-count"
                             className="w-full p-2 border border-border rounded-md"
                             value={questionCount}
-                            onChange={(e) => setQuestionCount(parseInt(e.target.value))}
+                            onChange={(e) =>
+                              setQuestionCount(parseInt(e.target.value))
+                            }
                           >
                             <option value="5">5 questions</option>
                             <option value="10">10 questions</option>
@@ -786,9 +935,12 @@ const Quiz = () => {
                           </select>
                         </div>
                       </div>
-                      
+
                       <div className="pt-4">
-                        <Button className="w-full bg-brand-500 hover:bg-brand-600" onClick={handleStartQuiz}>
+                        <Button
+                          className="w-full bg-brand-500 hover:bg-brand-600"
+                          onClick={handleStartQuiz}
+                        >
                           Generate Custom Quiz
                         </Button>
                       </div>
@@ -810,57 +962,82 @@ const Quiz = () => {
                   {quizResult && (
                     <>
                       <div className="text-center py-6">
-                        <div className={`text-5xl font-bold mb-2 ${
-                          quizResult.percentage >= 80 ? "text-green-500" : 
-                          quizResult.percentage >= 60 ? "text-yellow-500" : "text-red-500"
-                        }`}>
+                        <div
+                          className={`text-5xl font-bold mb-2 ${
+                            quizResult.percentage >= 80
+                              ? "text-green-500"
+                              : quizResult.percentage >= 60
+                                ? "text-yellow-500"
+                                : "text-red-500"
+                          }`}
+                        >
                           {quizResult.percentage}%
                         </div>
                         <p className="text-muted-foreground">
-                          You got {quizResult.correctAnswers} out of {quizResult.totalQuestions} questions correct
+                          You got {quizResult.correctAnswers} out of{" "}
+                          {quizResult.totalQuestions} questions correct
                         </p>
                         <p className="text-sm text-muted-foreground mt-2">
-                          Time spent: {Math.floor(quizResult.timeSpent / 60)}m {quizResult.timeSpent % 60}s
+                          Time spent: {Math.floor(quizResult.timeSpent / 60)}m{" "}
+                          {quizResult.timeSpent % 60}s
                         </p>
                         <div className="mt-4 flex justify-center">
                           {quizResult.percentage >= 80 ? (
                             <div className="flex items-center text-green-500">
                               <Award className="mr-2 h-5 w-5" />
-                              <span className="font-medium">Excellent work!</span>
+                              <span className="font-medium">
+                                Excellent work!
+                              </span>
                             </div>
                           ) : quizResult.percentage >= 60 ? (
                             <div className="flex items-center text-yellow-500">
                               <AlertTriangle className="mr-2 h-5 w-5" />
-                              <span className="font-medium">Good effort, but room for improvement</span>
+                              <span className="font-medium">
+                                Good effort, but room for improvement
+                              </span>
                             </div>
                           ) : (
                             <div className="flex items-center text-red-500">
                               <AlertTriangle className="mr-2 h-5 w-5" />
-                              <span className="font-medium">Needs more study</span>
+                              <span className="font-medium">
+                                Needs more study
+                              </span>
                             </div>
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="space-y-3">
                         <h3 className="font-medium">Score Breakdown</h3>
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span>Correct Answers</span>
-                            <span className="font-medium">{quizResult.correctAnswers}/{quizResult.totalQuestions}</span>
+                            <span className="font-medium">
+                              {quizResult.correctAnswers}/
+                              {quizResult.totalQuestions}
+                            </span>
                           </div>
-                          <Progress value={quizResult.percentage} className={`h-2 ${
-                            quizResult.percentage >= 80 ? "bg-green-100" : 
-                            quizResult.percentage >= 60 ? "bg-yellow-100" : "bg-red-100"
-                          }`} />
+                          <Progress
+                            value={quizResult.percentage}
+                            className={`h-2 ${
+                              quizResult.percentage >= 80
+                                ? "bg-green-100"
+                                : quizResult.percentage >= 60
+                                  ? "bg-yellow-100"
+                                  : "bg-red-100"
+                            }`}
+                          />
                         </div>
                       </div>
-                      
+
                       <div className="space-y-3">
                         <h3 className="font-medium">Areas to Improve</h3>
                         <ul className="space-y-2">
                           {quizResult.improvements.map((improvement, index) => (
-                            <li key={index} className="flex items-start text-sm">
+                            <li
+                              key={index}
+                              className="flex items-start text-sm"
+                            >
                               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20 text-red-500 mr-2">
                                 {index + 1}
                               </span>
@@ -869,24 +1046,31 @@ const Quiz = () => {
                           ))}
                         </ul>
                       </div>
-                      
+
                       <div className="p-4 bg-muted/40 rounded-md">
-                        <h3 className="font-medium mb-2">Recommended Study Resources</h3>
+                        <h3 className="font-medium mb-2">
+                          Recommended Study Resources
+                        </h3>
                         <ul className="space-y-2 text-sm">
                           <li className="flex items-center">
                             <BookOpen className="h-4 w-4 mr-2 text-brand-500" />
-                            <span>"Machine Learning: A Comprehensive Guide" - Chapter 3</span>
+                            <span>
+                              "Machine Learning: A Comprehensive Guide" -
+                              Chapter 3
+                            </span>
                           </li>
                           <li className="flex items-center">
                             <BookOpen className="h-4 w-4 mr-2 text-brand-500" />
-                            <span>"Introduction to AI Algorithms" - Section 2.4</span>
+                            <span>
+                              "Introduction to AI Algorithms" - Section 2.4
+                            </span>
                           </li>
                         </ul>
                       </div>
-                      
+
                       <div className="flex space-x-4 pt-4">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="flex-1"
                           onClick={() => {
                             setActiveTab("topic");
@@ -913,12 +1097,13 @@ const Quiz = () => {
                       <h2 className="font-semibold">{currentQuiz?.title}</h2>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Clock className="h-4 w-4 mr-1" />
-                        Question {currentQuestion + 1} of {currentQuiz?.questions.length}
+                        Question {currentQuestion + 1} of{" "}
+                        {currentQuiz?.questions.length}
                       </div>
                     </div>
                     <Progress value={progress} className="h-2" />
                   </div>
-                  
+
                   {currentQuizQuestion && (
                     <div className="space-y-6">
                       <div>
@@ -927,14 +1112,15 @@ const Quiz = () => {
                           {currentQuizQuestion.question}
                         </h3>
                       </div>
-                      
+
                       <div className="space-y-3">
                         {currentQuizQuestion.options.map((option, index) => (
                           <div
                             key={index}
                             className={`p-4 border rounded-md cursor-pointer transition-colors ${
-                              selectedAnswer === index 
-                                ? selectedAnswer === currentQuizQuestion.correctAnswer
+                              selectedAnswer === index
+                                ? selectedAnswer ===
+                                  currentQuizQuestion.correctAnswer
                                   ? "border-green-500 bg-green-50 dark:bg-green-900/20"
                                   : "border-red-500 bg-red-50 dark:bg-red-900/20"
                                 : "border-border hover:border-brand-200 dark:hover:border-brand-800"
@@ -944,7 +1130,8 @@ const Quiz = () => {
                             <div className="flex items-start">
                               <div className="flex-shrink-0 mr-3">
                                 {selectedAnswer === index ? (
-                                  selectedAnswer === currentQuizQuestion.correctAnswer ? (
+                                  selectedAnswer ===
+                                  currentQuizQuestion.correctAnswer ? (
                                     <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center">
                                       <Check className="h-3 w-3 text-white" />
                                     </div>
@@ -964,7 +1151,7 @@ const Quiz = () => {
                           </div>
                         ))}
                       </div>
-                      
+
                       {selectedAnswer !== null && (
                         <>
                           {showExplanation ? (
@@ -976,13 +1163,23 @@ const Quiz = () => {
                               <p>{currentQuizQuestion.explanation}</p>
                             </div>
                           ) : (
-                            <Button variant="outline" onClick={handleViewExplanation} className="w-full mt-2">
+                            <Button
+                              variant="outline"
+                              onClick={handleViewExplanation}
+                              className="w-full mt-2"
+                            >
                               Show Explanation
                             </Button>
                           )}
-                          
-                          <Button className="w-full mt-4 bg-brand-500 hover:bg-brand-600" onClick={handleNextQuestion}>
-                            {currentQuiz && currentQuestion < currentQuiz.questions.length - 1 ? "Next Question" : "Finish Quiz"}
+
+                          <Button
+                            className="w-full mt-4 bg-brand-500 hover:bg-brand-600"
+                            onClick={handleNextQuestion}
+                          >
+                            {currentQuiz &&
+                            currentQuestion < currentQuiz.questions.length - 1
+                              ? "Next Question"
+                              : "Finish Quiz"}
                           </Button>
                         </>
                       )}

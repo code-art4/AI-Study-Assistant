@@ -1,5 +1,5 @@
-import { StudyTask } from '@/types';
-import { createContext, useState, useContext } from 'react';
+import { StudyTask } from "@/types";
+import { createContext, useState, useContext } from "react";
 
 interface IAuthContext {
   tasks: StudyTask[];

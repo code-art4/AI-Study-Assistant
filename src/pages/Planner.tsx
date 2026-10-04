@@ -1,45 +1,45 @@
-import { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar';
-import { Calendar, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { toast } from '@/components/ui/use-toast';
-import { StudyPlan } from '@/types';
-import { format } from 'date-fns';
-import PlanDetails from '@/components/planner/Details';
-import DialogComponent from '@/components/planner/Dialog';
-import PlannerComponent from './../components/planner/index';
-import useQuery from '@/hooks/useQuery';
+import { useState, useEffect } from "react";
+import Navbar from "@/components/Navbar";
+import { Calendar, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { toast } from "@/components/ui/use-toast";
+import { StudyPlan } from "@/types";
+import { format } from "date-fns";
+import PlanDetails from "@/components/planner/Details";
+import DialogComponent from "@/components/planner/Dialog";
+import PlannerComponent from "./../components/planner/index";
+import useQuery from "@/hooks/useQuery";
 
 const Planner = () => {
-  const [activeTab, setActiveTab] = useState('create');
+  const [activeTab, setActiveTab] = useState("create");
   const [showPlanDetails, setShowPlanDetails] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<StudyPlan | null>(null);
   // const [plans, setPlans] = useState<StudyPlan[]>();
   const [formData, setFormData] = useState({
-    title: '',
-    subject: '',
-    startDate: '',
-    endDate: '',
-    studyGoal: '',
-    category: '',
+    title: "",
+    subject: "",
+    startDate: "",
+    endDate: "",
+    studyGoal: "",
+    category: "",
   });
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   enum HttpMethod {
-  GET = 'get',
-  POST = 'post',
-}
+    GET = "get",
+    POST = "post",
+  }
 
   const {
     loadFn: fetchPlans,
     loading: plansLoading,
     error: plansError,
-    success: returnedPlans
+    success: returnedPlans,
   } = useQuery({
-    url: 'studyPlans/',
+    url: "studyPlans/",
     method: HttpMethod.GET,
   });
 
@@ -48,7 +48,7 @@ const Planner = () => {
   }, []);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
@@ -63,29 +63,28 @@ const Planner = () => {
     // setPlans(plans.filter((p) => p.id !== planId));
     setShowPlanDetails(false);
     toast({
-      title: 'Plan Deleted',
-      description: 'Your study plan has been deleted successfully.',
+      title: "Plan Deleted",
+      description: "Your study plan has been deleted successfully.",
     });
   };
-  
 
   const handleEditPlan = () => {
     // In a real app, we would populate the form with the current plan data
-    setActiveTab('create');
+    setActiveTab("create");
     setShowPlanDetails(false);
     toast({
-      title: 'Edit Mode',
-      description: 'You can now edit your study plan.',
+      title: "Edit Mode",
+      description: "You can now edit your study plan.",
     });
   };
 
-   const {
+  const {
     loadFn: createTask,
     loading,
     error,
-    success
+    success,
   } = useQuery({
-    url: 'studyPlans/create',
+    url: "studyPlans/create",
   });
 
   const handleGeneratePlan = () => {
@@ -97,17 +96,17 @@ const Planner = () => {
       !formData.subject
     ) {
       toast({
-        title: 'Missing Information',
-        description: 'Please fill in all required fields.',
-        variant: 'destructive',
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
       });
       return;
     }
 
     // Simulate API call to generate plan
     toast({
-      title: 'Generating Plan',
-      description: 'Creating your personalized study plan...',
+      title: "Generating Plan",
+      description: "Creating your personalized study plan...",
     });
 
     setTimeout(() => {
@@ -138,17 +137,17 @@ const Planner = () => {
 
       // Reset form
       setFormData({
-        title: '',
-        subject: '',
-        startDate: '',
-        endDate: '',
-        studyGoal: '',
-        category: '',
+        title: "",
+        subject: "",
+        startDate: "",
+        endDate: "",
+        studyGoal: "",
+        category: "",
       });
 
       toast({
-        title: 'Plan Created',
-        description: 'Your study plan has been generated successfully.',
+        title: "Plan Created",
+        description: "Your study plan has been generated successfully.",
       });
     }, 2000);
 
@@ -175,7 +174,7 @@ const Planner = () => {
   };
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <Navbar />
       <PlannerComponent {...PlannerProps} />
 

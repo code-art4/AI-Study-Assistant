@@ -1,11 +1,11 @@
-import { Calendar, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { format } from 'date-fns';
-import PlanDetails from '@/components/planner/Details';
-import { toast } from '@/components/ui/use-toast';
+import { Calendar, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { format } from "date-fns";
+import PlanDetails from "@/components/planner/Details";
+import { toast } from "@/components/ui/use-toast";
 
 const Planner = (props) => {
   const {
@@ -27,37 +27,37 @@ const Planner = (props) => {
   const handleUseTemplate = (templateTitle: string) => {
     setFormData({
       title: templateTitle,
-      subject: '',
-      startDate: new Date().toISOString().split('T')[0],
+      subject: "",
+      startDate: new Date().toISOString().split("T")[0],
       endDate: new Date(new Date().setDate(new Date().getDate() + 14))
         .toISOString()
-        .split('T')[0],
+        .split("T")[0],
       studyGoal: `Complete ${templateTitle} successfully`,
-      category: '',
+      category: "",
     });
 
-    setActiveTab('create');
+    setActiveTab("create");
 
     toast({
-      title: 'Template Selected',
+      title: "Template Selected",
       description: `The ${templateTitle} template has been loaded.`,
     });
   };
 
   return (
-    <main className='pt-24 pb-16'>
-      <div className='container px-4 md:px-6'>
-        <header className='mb-8'>
-          <div className='flex justify-between items-center'>
+    <main className="pt-24 pb-16">
+      <div className="container px-4 md:px-6">
+        <header className="mb-8">
+          <div className="flex justify-between items-center">
             <div>
-              <h1 className='text-3xl font-bold mb-2'>AI Study Planner</h1>
-              <p className='text-muted-foreground'>
+              <h1 className="text-3xl font-bold mb-2">AI Study Planner</h1>
+              <p className="text-muted-foreground">
                 Generate personalized study plans based on your goals, courses,
                 and deadlines
               </p>
             </div>
-            <Button variant='outline' onClick={handleCalendarSync}>
-              <Calendar className='h-4 w-4 mr-2' />
+            <Button variant="outline" onClick={handleCalendarSync}>
+              <Calendar className="h-4 w-4 mr-2" />
               Sync with Google Calendar
             </Button>
           </div>
@@ -65,129 +65,132 @@ const Planner = (props) => {
 
         {!showPlanDetails ? (
           <Tabs
-            defaultValue='create'
+            defaultValue="create"
             value={activeTab}
             onValueChange={setActiveTab}
-            className='space-y-6'
+            className="space-y-6"
           >
-            <TabsList className='grid grid-cols-2 w-[400px]'>
-              <TabsTrigger value='create'>Create Plan</TabsTrigger>
-              <TabsTrigger value='templates'>Templates</TabsTrigger>
+            <TabsList className="grid grid-cols-2 w-[400px]">
+              <TabsTrigger value="create">Create Plan</TabsTrigger>
+              <TabsTrigger value="templates">Templates</TabsTrigger>
             </TabsList>
 
-            <TabsContent value='create' className='space-y-6'>
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-                <div className='md:col-span-2'>
+            <TabsContent value="create" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2">
                   <Card>
                     <CardHeader>
                       <CardTitle>Create New Study Plan</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <form className='space-y-4'>
-                        <div className='space-y-2'>
+                      <form className="space-y-4">
+                        <div className="space-y-2">
                           <label
-                            htmlFor='title'
-                            className='text-sm font-medium'
+                            htmlFor="title"
+                            className="text-sm font-medium"
                           >
                             Plan Title
                           </label>
                           <input
-                            id='title'
-                            type='text'
-                            className='w-full p-2 border border-border rounded-md'
-                            placeholder='e.g. Midterm Preparation'
+                            id="title"
+                            type="text"
+                            className="w-full p-2 border border-border rounded-md"
+                            placeholder="e.g. Midterm Preparation"
                             value={formData.title}
                             onChange={handleInputChange}
                           />
                         </div>
 
-                        <div className='space-y-2'>
+                        <div className="space-y-2">
                           <label
-                            htmlFor='subject'
-                            className='text-sm font-medium'
+                            htmlFor="subject"
+                            className="text-sm font-medium"
                           >
                             Subject
                           </label>
                           <input
-                            id='subject'
-                            type='text'
-                            className='w-full p-2 border border-border rounded-md'
-                            placeholder='e.g. Introduction to Computer Science'
+                            id="subject"
+                            type="text"
+                            className="w-full p-2 border border-border rounded-md"
+                            placeholder="e.g. Introduction to Computer Science"
                             value={formData.subject}
                             onChange={handleInputChange}
                           />
                         </div>
 
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                          <div className='space-y-2'>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
                             <label
-                              htmlFor='startDate'
-                              className='text-sm font-medium'
+                              htmlFor="startDate"
+                              className="text-sm font-medium"
                             >
                               Start Date
                             </label>
                             <input
-                              id='startDate'
-                              type='date'
-                              className='w-full p-2 border border-border rounded-md'
+                              id="startDate"
+                              type="date"
+                              className="w-full p-2 border border-border rounded-md"
                               value={formData.startDate}
                               onChange={handleInputChange}
                             />
                           </div>
 
-                          <div className='space-y-2'>
+                          <div className="space-y-2">
                             <label
-                              htmlFor='endDate'
-                              className='text-sm font-medium'
+                              htmlFor="endDate"
+                              className="text-sm font-medium"
                             >
                               End Date
                             </label>
                             <input
-                              id='endDate'
-                              type='date'
-                              className='w-full p-2 border border-border rounded-md'
+                              id="endDate"
+                              type="date"
+                              className="w-full p-2 border border-border rounded-md"
                               value={formData.endDate}
                               onChange={handleInputChange}
                             />
                           </div>
                         </div>
 
-                        <div className='space-y-2'>
-                          <label htmlFor='studyGoal' className='text-sm font-medium'>
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="studyGoal"
+                            className="text-sm font-medium"
+                          >
                             Study Goal
                           </label>
                           <textarea
-                            id='studyGoal'
-                            className='w-full p-2 border border-border rounded-md'
+                            id="studyGoal"
+                            className="w-full p-2 border border-border rounded-md"
                             rows={3}
-                            placeholder='e.g. Prepare for midterm exam with focus on chapters 1-5'
+                            placeholder="e.g. Prepare for midterm exam with focus on chapters 1-5"
                             value={formData.studyGoal}
                             onChange={handleInputChange}
                           />
                         </div>
 
-                        <div className='space-y-2'>
+                        <div className="space-y-2">
                           <label
-                            htmlFor='category'
-                            className='text-sm font-medium'
+                            htmlFor="category"
+                            className="text-sm font-medium"
                           >
                             Key Topics (separated by commas)
                           </label>
                           <textarea
-                            id='category'
-                            className='w-full p-2 border border-border rounded-md'
+                            id="category"
+                            className="w-full p-2 border border-border rounded-md"
                             rows={3}
-                            placeholder='e.g. Variables, Functions, Data Structures, Algorithms'
+                            placeholder="e.g. Variables, Functions, Data Structures, Algorithms"
                             value={formData.category}
                             onChange={handleInputChange}
                           />
                         </div>
 
-                        <div className='pt-4'>
+                        <div className="pt-4">
                           <Button
-                            className='w-full bg-brand-500 hover:bg-brand-600'
+                            className="w-full bg-brand-500 hover:bg-brand-600"
                             onClick={handleGeneratePlan}
-                            type='button'
+                            type="button"
                           >
                             Generate Study Plan
                           </Button>
@@ -197,31 +200,31 @@ const Planner = (props) => {
                   </Card>
 
                   {plans?.length > 0 && (
-                    <div className='mt-6'>
-                      <h3 className='text-lg font-medium mb-4'>
+                    <div className="mt-6">
+                      <h3 className="text-lg font-medium mb-4">
                         Your Study Plans
                       </h3>
-                      <div className='space-y-4'>
+                      <div className="space-y-4">
                         {plans?.map((plan) => (
                           <Card
                             key={plan._id}
-                            className='hover-effect cursor-pointer'
+                            className="hover-effect cursor-pointer"
                             onClick={() => handleViewPlan(plan)}
                           >
-                            <CardContent className='pt-6'>
-                              <div className='flex justify-between'>
+                            <CardContent className="pt-6">
+                              <div className="flex justify-between">
                                 <div>
-                                  <h4 className='font-medium'>{plan.title}</h4>
-                                  <p className='text-sm text-muted-foreground'>
+                                  <h4 className="font-medium">{plan.title}</h4>
+                                  <p className="text-sm text-muted-foreground">
                                     {plan.subject}
                                   </p>
-                                  <p className='text-xs text-muted-foreground mt-1'>
-                                    {format(plan.startDate, 'MMM d')} -{' '}
-                                    {format(plan.endDate, 'MMM d, yyyy')}
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {format(plan.startDate, "MMM d")} -{" "}
+                                    {format(plan.endDate, "MMM d, yyyy")}
                                   </p>
                                 </div>
-                                <div className='flex flex-col items-end'>
-                                  <div className='text-sm font-medium mb-1'>
+                                <div className="flex flex-col items-end">
+                                  <div className="text-sm font-medium mb-1">
                                     {
                                       plan.session?.filter((s) => s.completed)
                                         .length
@@ -235,7 +238,7 @@ const Planner = (props) => {
                                         plan.session?.length) *
                                       100
                                     }
-                                    className='h-2 w-24'
+                                    className="h-2 w-24"
                                   />
                                 </div>
                               </div>
@@ -253,9 +256,9 @@ const Planner = (props) => {
                       <CardTitle>Study Tips</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <ul className='space-y-3'>
-                        <li className='flex items-start'>
-                          <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-500 mr-2'>
+                      <ul className="space-y-3">
+                        <li className="flex items-start">
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-500 mr-2">
                             1
                           </span>
                           <span>
@@ -263,8 +266,8 @@ const Planner = (props) => {
                             periods with 5-minute breaks (Pomodoro Technique).
                           </span>
                         </li>
-                        <li className='flex items-start'>
-                          <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-500 mr-2'>
+                        <li className="flex items-start">
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-500 mr-2">
                             2
                           </span>
                           <span>
@@ -272,8 +275,8 @@ const Planner = (props) => {
                             engagement and improve retention.
                           </span>
                         </li>
-                        <li className='flex items-start'>
-                          <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-500 mr-2'>
+                        <li className="flex items-start">
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-500 mr-2">
                             3
                           </span>
                           <span>
@@ -281,8 +284,8 @@ const Planner = (props) => {
                             passively reading.
                           </span>
                         </li>
-                        <li className='flex items-start'>
-                          <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-500 mr-2'>
+                        <li className="flex items-start">
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-500 mr-2">
                             4
                           </span>
                           <span>
@@ -292,20 +295,20 @@ const Planner = (props) => {
                         </li>
                       </ul>
 
-                      <div className='mt-6 p-4 bg-muted rounded-lg'>
-                        <div className='flex items-center mb-2'>
-                          <AlertCircle className='h-4 w-4 mr-2 text-amber-500' />
-                          <h4 className='font-medium text-sm'>
+                      <div className="mt-6 p-4 bg-muted rounded-lg">
+                        <div className="flex items-center mb-2">
+                          <AlertCircle className="h-4 w-4 mr-2 text-amber-500" />
+                          <h4 className="font-medium text-sm">
                             Need More Structure?
                           </h4>
                         </div>
-                        <p className='text-sm text-muted-foreground'>
+                        <p className="text-sm text-muted-foreground">
                           Our AI can analyze your learning style and schedule to
                           create optimized study plans.
                         </p>
                         <Button
-                          variant='link'
-                          className='px-0 py-1 h-auto text-brand-500'
+                          variant="link"
+                          className="px-0 py-1 h-auto text-brand-500"
                         >
                           Take Learning Style Assessment
                         </Button>
@@ -316,52 +319,52 @@ const Planner = (props) => {
               </div>
             </TabsContent>
 
-            <TabsContent value='templates' className='space-y-6'>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <TabsContent value="templates" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
                   {
-                    title: 'Exam Preparation',
+                    title: "Exam Preparation",
                     description:
-                      'Intensive study plan for upcoming exams with spaced repetition.',
-                    duration: '2-4 weeks',
+                      "Intensive study plan for upcoming exams with spaced repetition.",
+                    duration: "2-4 weeks",
                   },
                   {
-                    title: 'Semester Overview',
+                    title: "Semester Overview",
                     description:
-                      'Balanced study plan covering all subjects throughout the semester.',
-                    duration: '3-4 months',
+                      "Balanced study plan covering all subjects throughout the semester.",
+                    duration: "3-4 months",
                   },
                   {
-                    title: 'Project Focus',
+                    title: "Project Focus",
                     description:
-                      'Dedicated plan for completing a major project or assignment.',
-                    duration: '1-3 weeks',
+                      "Dedicated plan for completing a major project or assignment.",
+                    duration: "1-3 weeks",
                   },
                   {
-                    title: 'New Subject Mastery',
+                    title: "New Subject Mastery",
                     description:
-                      'Step-by-step approach to mastering a new subject from scratch.',
-                    duration: '1-2 months',
+                      "Step-by-step approach to mastering a new subject from scratch.",
+                    duration: "1-2 months",
                   },
                 ].map((template, index) => (
-                  <Card key={index} className='cursor-pointer hover-effect'>
+                  <Card key={index} className="cursor-pointer hover-effect">
                     <CardHeader>
-                      <CardTitle className='flex items-center'>
-                        <Calendar className='mr-2 h-5 w-5 text-brand-500' />
+                      <CardTitle className="flex items-center">
+                        <Calendar className="mr-2 h-5 w-5 text-brand-500" />
                         {template.title}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className='text-muted-foreground mb-4'>
+                      <p className="text-muted-foreground mb-4">
                         {template.description}
                       </p>
-                      <div className='flex justify-between items-center'>
-                        <span className='text-sm text-muted-foreground'>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">
                           Duration: {template.duration}
                         </span>
                         <Button
-                          variant='outline'
-                          size='sm'
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleUseTemplate(template.title)}
                         >
                           Use Template
@@ -374,9 +377,10 @@ const Planner = (props) => {
             </TabsContent>
           </Tabs>
         ) : (
-          <div className='space-y-4'>
-            <Button variant='outline' 
-            // onClick={() => setShowPlanDetails(false)}
+          <div className="space-y-4">
+            <Button
+              variant="outline"
+              // onClick={() => setShowPlanDetails(false)}
             >
               Back to All Plans
             </Button>

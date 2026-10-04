@@ -31,10 +31,10 @@ interface NewTaskModalProps {
   onOpenChange: (open: boolean) => void;
   onCreate: (task: NewTask) => void;
   subjects?: string[]; // suggestions shown in the Subject field
-  title:string
-  description:string
-  modalId:string
-  buttonName:string
+  title: string;
+  description: string;
+  modalId: string;
+  buttonName: string;
 }
 
 const priorities: { value: Priority; label: string; active: string }[] = [
@@ -61,7 +61,7 @@ export default function NewTaskModal({
   title,
   description,
   modalId,
-  buttonName
+  buttonName,
 }: NewTaskModalProps) {
   const [task, setTask] = useState<NewTask>(emptyTask);
   const [tagInput, setTagInput] = useState("");
@@ -80,7 +80,10 @@ export default function NewTaskModal({
   };
 
   const removeTag = (tag: string) =>
-    update("categories", task.categories.filter((c) => c !== tag));
+    update(
+      "categories",
+      task.categories.filter((c) => c !== tag),
+    );
 
   const reset = () => {
     setTask(emptyTask);
@@ -92,14 +95,13 @@ export default function NewTaskModal({
     reset();
   };
 
-
   const {
     loading: isTaskCreating,
     error: taskError,
     success: TaskCreated,
     loadFn: createTask,
   } = useQuery({
-    url: 'tasks/task/create',
+    url: "tasks/task/create",
   });
 
   const submit = () => {
@@ -110,7 +112,10 @@ export default function NewTaskModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => (v ? onOpenChange(true) : close())}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => (v ? onOpenChange(true) : close())}
+    >
       <DialogContent className="max-w-[540px] gap-0 rounded-2xl p-0">
         <DialogHeader className="flex-row items-start gap-3.5 space-y-0 p-6 pb-3 text-left">
           <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-500">
@@ -120,9 +125,7 @@ export default function NewTaskModal({
             <DialogTitle className="text-xl font-bold tracking-tight">
               {title}
             </DialogTitle>
-            <DialogDescription>
-              {description}
-            </DialogDescription>
+            <DialogDescription>{description}</DialogDescription>
           </div>
         </DialogHeader>
 
@@ -140,7 +143,9 @@ export default function NewTaskModal({
           <div className="grid gap-1.5">
             <Label htmlFor={`${modalId}-desc`}>
               Description{" "}
-              <span className="font-normal text-muted-foreground">(optional)</span>
+              <span className="font-normal text-muted-foreground">
+                (optional)
+              </span>
             </Label>
             <Textarea
               id={`${modalId}-desc`}

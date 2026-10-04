@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { toast } from '@/components/ui/use-toast';
-import GoogleAuthButton from '../ui/GoogleSvg';
+} from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
+import GoogleAuthButton from "../ui/GoogleSvg";
 
 const DialogComponent = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -21,8 +21,8 @@ const DialogComponent = () => {
   const handleAuthComplete = () => {
     setShowAuthDialog(false);
     toast({
-      title: 'Google Calendar Connected',
-      description: 'Your study plans will now sync with Google Calendar.',
+      title: "Google Calendar Connected",
+      description: "Your study plans will now sync with Google Calendar.",
     });
   };
 
@@ -37,12 +37,12 @@ const DialogComponent = () => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className='space-y-4 py-4'>
-          <div className='bg-muted p-4 rounded-md text-sm'>
+        <div className="space-y-4 py-4">
+          <div className="bg-muted p-4 rounded-md text-sm">
             <p>
               By connecting with Google Calendar, you authorize this app to:
             </p>
-            <ul className='list-disc pl-5 mt-2 space-y-1'>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
               <li>Create calendar events for your study sessions</li>
               <li>Read your existing calendar events to avoid conflicts</li>
               <li>Update or delete events created by this app</li>
@@ -53,7 +53,7 @@ const DialogComponent = () => {
         </div>
 
         <DialogFooter>
-          <Button variant='outline' onClick={() => setShowAuthDialog(false)}>
+          <Button variant="outline" onClick={() => setShowAuthDialog(false)}>
             Cancel
           </Button>
           <Button onClick={handleAuthComplete}>Continue</Button>

@@ -1,10 +1,9 @@
-
 export interface StudyTask {
   _id: string;
   title: string;
   description: string;
   subject: string;
-  priority: 'high' | 'medium' | 'low';
+  priority: "high" | "medium" | "low";
   completed: boolean;
   dueDate: Date;
   timeToFinish: string; // in minutes
@@ -80,6 +79,6 @@ export interface User {
 
 // Enum to define allowed HTTP methods
 export enum HttpMethod {
-  GET = 'get',
-  POST = 'post',
+  GET = "get",
+  POST = "post",
 }

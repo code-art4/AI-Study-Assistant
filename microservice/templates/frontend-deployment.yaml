@@ -15,8 +15,8 @@ spec:
         app: frontend
     spec:
       containers:
-      - name: frontend
-        image: "{{ .Values.image }}:{{ .Values.imageVersion }}"
-        ports:
-          - containerPort: {{ .Values.port }}
-            name: http
+        - name: frontend
+          image: "{{ .Values.image }}:{{ .Values.imageVersion }}"
+          ports:
+            - containerPort: { { .Values.port } }
+              name: http

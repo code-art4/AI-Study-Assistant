@@ -1,6 +1,5 @@
-
-import { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface FeatureCardProps {
   title: string;
@@ -11,13 +10,20 @@ interface FeatureCardProps {
   badge?: string;
 }
 
-const FeatureCard = ({ title, description, icon, className, onClick, badge }: FeatureCardProps) => {
+const FeatureCard = ({
+  title,
+  description,
+  icon,
+  className,
+  onClick,
+  badge,
+}: FeatureCardProps) => {
   return (
-    <div 
+    <div
       className={cn(
         "glass-card rounded-xl p-6 hover-effect cursor-pointer relative",
         onClick && "hover:border-brand-200 dark:hover:border-brand-800",
-        className
+        className,
       )}
       onClick={onClick}
     >

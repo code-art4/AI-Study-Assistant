@@ -58,7 +58,10 @@ export default function StudyPlanPage({
   const stats = useMemo(() => {
     const total = plan.sessions.length;
     const done = plan.sessions.filter((s) => s.completed);
-    const totalMinutes = plan.sessions.reduce((a, s) => a + s.durationMinutes, 0);
+    const totalMinutes = plan.sessions.reduce(
+      (a, s) => a + s.durationMinutes,
+      0,
+    );
     const doneMinutes = done.reduce((a, s) => a + s.durationMinutes, 0);
     return {
       total,
@@ -113,7 +116,11 @@ export default function StudyPlanPage({
           </div>
         </div>
         <div className="flex w-full gap-2 sm:w-auto">
-          <Button variant="outline" className="flex-1 sm:flex-none" onClick={onEdit}>
+          <Button
+            variant="outline"
+            className="flex-1 sm:flex-none"
+            onClick={onEdit}
+          >
             Edit plan
           </Button>
           <Button className="flex-1 sm:flex-none" onClick={onAddSession}>
