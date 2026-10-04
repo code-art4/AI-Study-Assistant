@@ -24,10 +24,7 @@ const useQuery = ({
   successFn,
   errorFn,
 }: QueryOptions): QueryResult => {
-  const axiosUrl =
-    import.meta.env.VITE_MODE === "development"
-      ? import.meta.env.VITE_API_URL
-      : "";
+  const axiosUrl = import.meta.env.VITE_API_URL;
 
   axios.defaults.baseURL = axiosUrl;
 
