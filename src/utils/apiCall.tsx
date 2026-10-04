@@ -12,10 +12,7 @@ const apiCall = async <T = unknown,>({
   method,
   values,
 }: ApiCallProps): Promise<T> => {
-  axios.defaults.baseURL =
-    import.meta.env.VITE_MODE === "development"
-      ? import.meta.env.VITE_API_URL
-      : "";
+  axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
   try {
     const response = await axios.request<T>({
