@@ -45,10 +45,46 @@ const Overview = (props: IOverview) => {
     isSameDay(new Date(task.dueDate), new Date()),
   );
 
+  const totalMinutesToday = dueToday
+    ?.map((task) => task.timeToFinish ?? 0)
+    .reduce((a, b) => a + b, 0);
+
+  const getWeekRange = (date = new Date()) => {
+    const start = new Date(date);
+    const day = start.getDay(); // 0 = Sunday ... 6 = Saturday
+    start.setDate(start.getDate() - ((day + 6) % 7)); // back to Monday
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 7); // next Monday, exclusive
+    return { start, end };
+  };
+
+  const { start, end } = getWeekRange();
+
+  const dueThisWeek =
+    tasks?.filter((task) => {
+      const due = new Date(task.dueDate);
+      // console.log(new Date(task.dueDate));
+      // console.log("Duedate ", due);
+      // console.log("Start ", start);
+      // console.log("End ", end);
+      return due >= start && due < end;
+    }) ?? [];
+
+  console.log(dueThisWeek);
+
+  const totalMinutesWeek = dueThisWeek.reduce(
+    (sum, task) => sum + (task?.dueDate ?? 0),
+    0,
+  );
+
+  console.log(totalMinutesWeek);
+
   return (
     <TabsContent value="overview" className="space-y-6">
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="shadow-sm overflow-hidden">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
@@ -68,7 +104,7 @@ const Overview = (props: IOverview) => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm overflow-hidden">
+        {/* <Card className="shadow-sm overflow-hidden">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
               <Clock className="w-4 h-4 mr-2 text-brand-500" />
@@ -77,17 +113,17 @@ const Overview = (props: IOverview) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold mb-1">
-              {formatDuration(progress.studyTimeToday)}
+              {formatDuration(totalMinutesToday)}
             </div>
             <Progress
               value={(progress.studyTimeToday / 180) * 100}
               className="h-2"
             />
             <p className="text-xs text-muted-foreground mt-2">
-              {formatDuration(progress.studyTimeWeek)} this week
+              {formatDuration(totalMinutesWeek)} this week
             </p>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card className="shadow-sm overflow-hidden">
           <CardHeader className="pb-2">
