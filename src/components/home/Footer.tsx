@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-muted/50 border-t border-border py-12">
       <div className="container px-4 md:px-6 mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between md:items-center">
           <div className="mb-6 md:mb-0">
             <Link to="/" className="flex items-center gap-2">
               <span className="bg-gradient-to-r from-brand-600 to-brand-400 rounded-md p-1.5">

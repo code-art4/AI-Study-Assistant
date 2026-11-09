@@ -92,6 +92,8 @@ const Dashboard = () => {
     buttonName: "Create task",
   };
 
+  console.log(progress);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
